@@ -1,0 +1,40 @@
+# R / RStudio
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+
+# Git
+.git
+.gitignore
+
+# renv (only Keep lockfile)
+renv/library
+renv/staging
+renv/python
+renv/sandbox
+renv/cache
+renv/local
+
+# Large data / outputs 
+data
+raw_data
+output
+outputs
+results
+plots
+figures
+*.zip
+*.tar
+*.gz
+*.rds
+*.h5
+*.h5ad
+*.hdf5
+*.bam
+*.fastq
+*.tsv.gz
+
+# OS junk
+.DS_Store
+Thumbs.db
