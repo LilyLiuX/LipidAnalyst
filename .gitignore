@@ -1,0 +1,30 @@
+# R
+.Rhistory
+.RData
+.Ruserdata
+
+# RStudio
+.Rproj.user/
+
+# renv
+renv/library/
+renv/staging/
+
+# system files
+.DS_Store
+
+# logs
+*.log
+
+# temp
+tmp/
+temp/
+
+# HTML widget dependencies
+*_files/
+
+# zip
+*.zip
+
+# Git
+.gitignore
