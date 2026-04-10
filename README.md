@@ -92,8 +92,6 @@ renv::restore()
 LipidAnalyst includes embedded example data within the application for demonstration purposes.\
 These data are preloaded in the app interface and allow users to explore functionalities without uploading external files.
 
-For privacy and data size considerations, raw datasets are not distributed separately.
-
 Users are encouraged to upload their own lipidomics datasets for analysis.
 
 ## 📄 License
