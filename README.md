@@ -1,45 +1,57 @@
-# ![](www/LipidAnalyst.png){width="49"} LipidAnalyst
+# 🧬LipidAnalyst
 
 **LipidAnalyst** is a Shiny-based, end-to-end lipidomics analysis platform designed for researchers without programming expertise. It enables streamlined data preprocessing, statistical analysis, visualization, and network modeling within an interactive interface.
 
 ## 🔬 Features
 
--    📊 **Data preprocessing**
+-   📊 **Data preprocessing**
 
-    -   Feature filtering
+```         
+-   Feature filtering
 
-    -   Missing value imputation
+-   Missing value imputation
 
-    -   Merging lipid duplicates or isoforms
+-   Merging lipid duplicates or isoforms
 
-    -   Normalization (internal standard, class-based, etc.)
+-   Normalization (internal standard, class-based, etc.)
+```
 
--    🧪 **Statistical analysis**
+-   🧪 **Statistical analysis**
 
-    -   Student t-test, Welch’s t-test, ANOVA
+```         
+-   Student t-test, Welch’s t-test, ANOVA
 
-    -    Volcano plots
+-    Volcano plots
+```
 
--    📉 **Multivariate analysis**
+-   📉 **Multivariate analysis**
 
-    -    PCA
+```         
+-    PCA
 
-    -    PLS-DA / OPLS-DA
+-    PLS-DA / OPLS-DA
+```
 
--    🧠 **Network analysis**
+-   🧠 **Network analysis**
 
-    -    Correlation networks
+```         
+-    Correlation networks
 
-    -    DSPC (debiased sparse partial correlation)
+-    DSPC (debiased sparse partial correlation)
+```
 
--    🤖 **Machine learning**
+-   🤖 **Machine learning**
 
-    -    Random Forest classification with Feature importance ranking
+```         
+-    Random Forest classification with Feature importance ranking
+```
 
--    🔥 **Novel visualization**
+-   🔥 **Novel visualization**
 
-    -    Differential Mean Lipid Heatmaps\
-        (organized by carbon chain length × unsaturation)
+```         
+-    Differential Mean Lipid Heatmaps\
+    (organized by carbon chain length × unsaturation)
+```
 
 ## 🖥️ Run locally with Docker
 
@@ -65,9 +77,9 @@ http://localhost:3838
 
 This project uses:
 
--    `renv` for R package management
+-   `renv` for R package management
 
--    `Docker` for full environment reproducibility
+-   `Docker` for full environment reproducibility
 
 To restore the R environment manually:
 
