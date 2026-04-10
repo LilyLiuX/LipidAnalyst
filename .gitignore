@@ -28,3 +28,6 @@ temp/
 
 # Git
 .gitignore
+
+# R shiny connect
+rsconnect/
