@@ -8,7 +8,7 @@ server <- function(input, output,session) {
   
   originalData <- reactiveVal(NULL)
   
-  # Reactive for lipidomics data
+  # Reactive for llipidomics data
   observe({
     req(input$lipidomics_file,input$lipidROW)
     ext <- tools::file_ext(input$lipidomics_file$name)
