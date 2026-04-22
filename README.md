@@ -70,7 +70,7 @@ docker run --rm -p 3838:3838 lipidanalyst:latest
 ### 3. Open in browser
 
 ```         
-http://localhost:3838
+http://localhost:3838/lipidanalyst/
 ```
 
 ## 📦 Reproducibility

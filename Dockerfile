@@ -52,7 +52,8 @@ RUN R -e "options(repos = c(CRAN='https://cloud.r-project.org')); BiocManager::i
 RUN R -e "options(repos = BiocManager::repositories()); BiocManager::install(c('DelayedArray','GenomicRanges','SummarizedExperiment','MultiAssayExperiment','MultiDataSet','ropls'), ask=FALSE, update=FALSE)"
 
 # Install leidenAlg separately
-RUN R -e "options(repos = c(CRAN='https://cloud.r-project.org')); install.packages('leidenAlg')"
+RUN R -e "install.packages('remotes', repos='https://cloud.r-project.org'); \
+          remotes::install_version('leidenAlg', version = '1.1.6', repos='https://cloud.r-project.org')"
 
 # Restore remaining packages from renv.lock
 RUN R -e "options(repos = BiocManager::repositories()); renv::restore(prompt = FALSE)"
