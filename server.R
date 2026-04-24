@@ -82,27 +82,14 @@ server <- function(input, output,session) {
     # treating them as missing value
     df[is.na(df) | df == " " | df == ""|df == "NaN"|df == "N/A"] <- NA
      
-    # Try to convert each column to numeric, if possible
+    
     df[] <- lapply(df, function(col) {
-
-      col_trim <- trimws(col)
-      
-      # try to convert
-      num_col <- suppressWarnings(as.numeric(col_trim))
-      
-      success_ratio <- sum(!is.na(num_col)) / length(col_trim)
-      
-      # more than 80% is considered numeric column
-      if (success_ratio >= 0.8) {
-        return(num_col)
-      } else {
-        return(col_trim)  # keep original character
-      }
+      col <- trimws(as.character(col))
+      suppressWarnings(as.numeric(col))
     })
     
     # sort columns alphabetically by colnames
     df <- df[, order(colnames(df)), drop = FALSE]
-    print("original data is changed//")
     originalData(df)   # <-- store in reactiveVal
   })
   
@@ -158,7 +145,7 @@ server <- function(input, output,session) {
     data_part <- df[, , drop = FALSE]  
     is_numeric_matrix <- all(sapply(data_part, is.numeric))
     if (!is_numeric_matrix) {
-      # print the non numeric part
+
       non_numeric_cols <- names(data_part)[!sapply(data_part, is.numeric)]
       if (length(non_numeric_cols) > 0) {
         return(HTML(paste("<span style='color:red;'>Non-numeric columns detected: ",
@@ -1188,7 +1175,6 @@ server <- function(input, output,session) {
   observeEvent(input$CombineButton, {
     req(combined_result())
     Message <- combined_result()$message
-    # print(Message)
     showNotification(Message, type = "message")
   })
   processedData <- reactiveVal(NULL)
