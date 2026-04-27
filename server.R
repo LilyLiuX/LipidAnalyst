@@ -223,6 +223,8 @@ server <- function(input, output,session) {
       return(NULL)
     }
     rownames(metadata) <- metadata[[1]]  # set first column as rownames
+    # if there is any empty colnames, replace it with "NA_column"
+    colnames(metadata)[colnames(metadata) == ""] <- "NA_column"
     metadata <- metadata[ , -1, drop = F] 
     metadataFile(metadata)
   })
