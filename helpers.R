@@ -394,6 +394,9 @@ parse_name <- function(names, IS=F){
     name_class <- gsub("O-|P-", "", name_2)
     name_class <- clean_names(name_class)
     lipid_class <- stringr::str_extract(name_class, "^[A-Z-]+")
+    if (is.na(lipid_class)) {
+      lipid_class <- name_class
+    }
     lipid_classes_with_number <- c(
       "HEX4CER", "HEX3CER", "HEX2CER",
       "PIP3","PIP2",

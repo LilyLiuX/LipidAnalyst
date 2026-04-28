@@ -244,7 +244,7 @@ server <- function(input, output,session) {
       title = "Help Information",
       tagList(
         p("This section lets you upload the metadata in CSV/TSV/XLS/XLSX format."),
-        p("Data file includes sample ID, grouping variables, and other factors. Please ensure sample name is on the first column."),
+        p("Data file includes sample ID, grouping variables, and other factors. Please ensure sample name is on the ",tags$b("first"), " column."),
         p("After uploading, you can preview the data and check validation results here."),
         p("Grouping variables are variables that help categorize your samples into different groups for analysis, such as treatment vs. control."),
         p("Grouping variables are essential for downstream analysis. Please select the appropriate grouping variable from the dropdown menu after uploading the metadata.")
@@ -2723,6 +2723,7 @@ server <- function(input, output,session) {
     var1 <- input$vol_var1
     var2 <- input$vol_var2
     
+    # here, the t test is welch t test in default
     t_test_result <- t_test_lipids(split_data()[[var1]], 
                                    split_data()[[var2]],
                                    variance_p = F)
