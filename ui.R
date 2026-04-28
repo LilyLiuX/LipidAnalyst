@@ -3,7 +3,7 @@
 ui <-dashboardPage(
   dashboardHeader(
     title = tagList(
-      tags$i(class = "fa-solid fa-magnifying-glass", style = "margin-right: 5px;"),
+      # tags$i(class = "fa-solid fa-magnifying-glass", style = "margin-right: 5px;"),
       "LipidAnalyst"
     ),
     titleWidth = 240  # set header width
