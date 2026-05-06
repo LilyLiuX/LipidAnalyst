@@ -2442,8 +2442,10 @@ server <- function(input, output,session) {
                                     normalized_plan_data(),
                                     metadataWithGroup(),
                                     updated_parsed_table_w_mean(),
+                                    show_jitter = input$show_points,
                                     group_variable = input$define_group,
-                                    plot_type=input$plot_type_var)
+                                    plot_type=input$plot_type_var,
+                                    stats_method = input$stats_m)
       plt_list[[paste(input$plot_type_var,class,sep = "_")]] <- plot
     }
     all_lipid_class_plot_obj(plt_list)
@@ -2470,7 +2472,9 @@ server <- function(input, output,session) {
                                       metadataWithGroup(),
                                       updated_parsed_table_w_mean(),
                                       group_variable = input$define_group,
-                                      plot_type=input$plot_type_var)
+                                      plot_type=input$plot_type_var,
+                                      show_jitter = input$show_points,
+                                      stats_method = input$stats_m)
         plt_name <- paste(input$plot_type_var,class,sep = "_")
         path <- file.path(tmpdir, paste0(plt_name, ".png"))
         ggsave(path, plot = plot, width = input$width_CP, height = input$height_CP, dpi = input$DPI_CP)

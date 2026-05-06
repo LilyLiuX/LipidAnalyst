@@ -10,8 +10,7 @@ scroll_box <- function(..., height = "800px", collapsed = FALSE) {
 }
 nav_buttons <- function(prev_id = NULL, next_id = NULL,
                         prev_label = "Previous", next_label = "Next") {
-  div(
-    style = "
+  div(style = "
     position: sticky;
     bottom: 0;
     width: 100%;
