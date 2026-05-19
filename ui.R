@@ -113,7 +113,7 @@ ui <-dashboardPage(
                                          tags$hr(),
                                          tags$div(
                                            style = "font-size: 1.0em; color: gray; text-align: right;",
-                                           "Developed in Pennathur Lab, University of Michigan. ",tags$br(),
+                                           "Developed in University of Michigan",tags$br(),
                                             "For support or inquiries, please contact: lipidanalyst-requests@umich.edu"
                                            
                                          ),

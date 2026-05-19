@@ -1239,7 +1239,7 @@ create_pca_plot <- function(data, groups,
                  color = NA, 
                  type = "norm",
                  show.legend = FALSE) +
-    geom_point(aes(text = Sample), size = point_size) +   # label attached here
+    geom_point(aes(text =  paste0("Sample: ", Sample, "<br>Group: ", Group)), size = point_size) +   # label attached here
     theme_minimal() +
     labs(
       title = title, 
