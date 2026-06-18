@@ -4,7 +4,7 @@
 
 ## 🔬 Features
 
--   📊 **Data preprocessing**
+- 📊 **Data preprocessing**
 
 ```         
 -   Feature filtering
@@ -16,7 +16,7 @@
 -   Normalization (internal standard, class-based, etc.)
 ```
 
--   🧪 **Statistical analysis**
+- 🧪 **Statistical analysis**
 
 ```         
 -   Student t-test, Welch’s t-test, ANOVA
@@ -24,7 +24,7 @@
 -    Volcano plots
 ```
 
--   📉 **Multivariate analysis**
+- 📉 **Multivariate analysis**
 
 ```         
 -    PCA
@@ -32,7 +32,7 @@
 -    PLS-DA / OPLS-DA
 ```
 
--   🧠 **Network analysis**
+- 🧠 **Network analysis**
 
 ```         
 -    Correlation networks
@@ -40,13 +40,13 @@
 -    DSPC (debiased sparse partial correlation)
 ```
 
--   🤖 **Machine learning**
+- 🤖 **Machine learning**
 
 ```         
 -    Random Forest classification with Feature importance ranking
 ```
 
--   🔥 **Novel visualization**
+- 🔥 **Novel visualization**
 
 ```         
 -    Differential Mean Lipid Heatmaps\
@@ -77,9 +77,9 @@ http://localhost:3838/lipidanalyst/
 
 This project uses:
 
--   `renv` for R package management
+- `renv` for R package management
 
--   `Docker` for full environment reproducibility
+- `Docker` for full environment reproducibility
 
 To restore the R environment manually:
 

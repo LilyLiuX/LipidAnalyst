@@ -411,9 +411,9 @@ parse_name <- function(names, IS=F){
     
     
     if (grepl("O-", name_2)) {
-      lipid_class <- paste0(lipid_class, "O-")
+      lipid_class <- paste(lipid_class, "O-")
     } else if (grepl("P-", name_2)) {
-      lipid_class <- paste0(lipid_class, "P-")
+      lipid_class <- paste(lipid_class, "P-")
     }
     
     if (lipid_class =="FFA"){
@@ -461,7 +461,8 @@ parse_name <- function(names, IS=F){
         `Total unsaturation` = NA
       ))
     }
-    
+    # Lipid structures like TG 52:3 (FA 16:0) only have total carbon and unsaturation, 
+    # but no specific chain info for all three acyl chains.
     if (!is.na(lipid_class) && lipid_class == "TG" && grepl("FA", name_2)){
       chains <- stringr::str_extract_all(name_2, "[0-9]+:[0-9]+")[[1]]
       total_chain <- chains[1]
@@ -549,20 +550,12 @@ parse_name <- function(names, IS=F){
       else{ 
         chain2 <- c(NA, NA)
         if (chain1[1] >= 30) {
-          if (chain1[2] >= 1){
-            total_c <- chain1[1]
-            total_db <- chain1[2] 
-            chain1[1] <- 18
-            chain1[2] <- 0
-            chain2[1] <- total_c - 18 
-            chain2[2] <- total_db - 0
-          }
-          else {
-            total_c <- chain1[1]
-            total_db <- chain1[2] 
-            chain1[1] <- NA
-            chain1[2] <- NA
-          }
+          total_c <- chain1[1]
+          total_db <- chain1[2] 
+          chain1[1] <- 18
+          chain1[2] <- 0
+          chain2[1] <- total_c - 18 
+          chain2[2] <- total_db - 0
         }
         else{
           chain2[1] <- chain1[1]
@@ -586,7 +579,56 @@ parse_name <- function(names, IS=F){
         `Total unsaturation` = total_db
       )
     }
-   
+    else if (!is.na(lipid_class) 
+             && 
+             (lipid_class %in% c("DG","PC","PC O-","PC P-","PE", "PE O-","PE P-","PI","PS","PG","PA","TG","TG O-","TG P-")))
+              {
+      # Extract chain info (after lipid class)
+      chains <- stringr::str_extract_all(name_2, "[0-9]+:[0-9]+")[[1]]
+      
+      chain1 <- parse_chain(chains[1])
+      
+      # only total chain is reported, no specific sn1/sn2 info
+      if (length(chains) == 1){
+        
+        total_c <- chain1[1] 
+        total_db <- chain1[2]
+        chain1 <-  c(NA, NA)
+        chain2 <- c(NA, NA)
+        chain3 <- c(NA,NA)
+        table <- data.frame(
+          Name = name,
+          `Lipid class` = lipid_class,
+          `Chain1` = chain1[1],
+          `Chain1 unsaturation` = chain1[2],
+          `Chain2` = chain2[1],
+          `Chain2 unsaturation` = chain2[2],
+          `Chain3` = chain3[1],
+          `Chain3 unsaturation` = chain3[2],
+          `Total carbon` = total_c,
+          `Total unsaturation` = total_db
+        ) 
+      }
+      else{
+        chain1 <- parse_chain(chains[1])
+        chain2 <- if (length(chains) >= 2) parse_chain(chains[2]) else c(NA, NA)
+        chain3 <- if (length(chains) >= 3) parse_chain(chains[3]) else c(NA, NA)
+        
+        table <- data.frame(
+          Name = name,
+          `Lipid class` = lipid_class,
+          `Chain1` = chain1[1],
+          `Chain1 unsaturation` = chain1[2],
+          `Chain2` = chain2[1],
+          `Chain2 unsaturation` = chain2[2],
+          `Chain3` = chain3[1],
+          `Chain3 unsaturation` = chain3[2],
+          `Total carbon` = sum(chain1[1], chain2[1], chain3[1],na.rm = TRUE),
+          `Total unsaturation` = sum(chain1[2], chain2[2],chain3[2],na.rm = TRUE)
+        ) 
+      }
+ 
+    }
     else{
       
       
