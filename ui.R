@@ -746,7 +746,7 @@ ui <-dashboardPage(
                        title = "Normalized Data Preview",
                        status = "info",
                        width = 12,
-                       actionButton("run_plan_normalization", "Run Normalization Plan"),
+                       actionButton("run_plan_normalization", "Run Normalization"),
                        downloadButton("download_plan_normalized", "Download CSV"),
                        uiOutput("summary_normalized_plan_data"),
                        withSpinner(DT::dataTableOutput("PlanDataPreview"))
