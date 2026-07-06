@@ -113,7 +113,7 @@ ui <-dashboardPage(
                                          tags$hr(),
                                          tags$div(
                                            style = "font-size: 1.0em; color: gray; text-align: right;",
-                                           "Developed in University of Michigan/",tags$br(),
+                                           "Developed in University of Michigan",tags$br(),
                                             "For support or inquiries, please contact: lipidanalyst-requests@umich.edu"
                                            
                                          ),
@@ -1022,13 +1022,13 @@ ui <-dashboardPage(
               fluidRow(
                 column(width = 12,
                        scroll_box(title = "Volcano Plot Settings", status = "primary",
-                                  selectInput("vol_var1", "Select Grouping Variable:", choices = NULL),
-                                  selectInput("vol_var2", "Select Comparison Variable:", choices = NULL),
+                                  selectInput("vol_var1", "Select Control Variable:", choices = NULL),
+                                  selectInput("vol_var2", "Select Experimental Variable:", choices = NULL),
                                   numericInput("p_value_threshold", "P value Threshold:", value = 0.05, min = 0, max = 1, step = 0.01),
-                                  numericInput("fc_threshold", "Fold Change Threshold:", value = 1, min = 0, step = 0.01),
-                                  p("Fold change was defined as the difference in mean lipid abundance between groups rather than a ratio. 
-                                    This is because some normalized and transformed values included negative numbers, 
-                                    making ratio-based fold change inappropriate."),
+                                  numericInput("fc_threshold", "Mean Difference Threshold:", value = 1, min = 0, step = 0.01),
+                                  p("Difference was defined as the difference in mean lipid abundance between the two groups. 
+                                    This metric was used instead of a ratio because normalized or transformed abundance values 
+                                    may include negative values, making ratio-based fold change inappropriate."),
                                   checkboxInput("Adj_y", "Adjusted p value on the Y axis", value = F),
                                   actionButton("generate_volcano_plot", "Generate Volcano Plot"),
                                   width = 12),

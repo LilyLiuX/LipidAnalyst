@@ -1464,16 +1464,16 @@ plot_volcano <- function(volcano_data,Title, alpha = 0.05, fold_threshold = 0.5,
   
   volcano_data$Significant <- ifelse(volcano_data$neglog10_p_value > -log10(alpha), "Significant", "Not Significant")
   volcano_data$Category <- with(volcano_data, ifelse(Significant == "Significant"
-                                                     & (fold_change <= -fold_threshold
-                                                        | fold_change >= fold_threshold),
+                                                     & (Mean_difference <= -fold_threshold
+                                                        | Mean_difference >= fold_threshold),
                                                      "Significant & Beyond Threshold",
                                                      ifelse(Significant == "Significant", "Significant", "Not Significant")))
   
   p <- ggplot(volcano_data, 
-              aes(x = fold_change, y = neglog10_p_value, color = Category,
+              aes(x = Mean_difference, y = neglog10_p_value, color = Category,
                   text = paste0(
                     "Name: ", Name,
-                    "<br>Fold Change: ", round(fold_change, 3),
+                    "<br>Mean Difference: ", round(Mean_difference, 3),
                     "<br>-log10(p): ", round(neglog10_p_value, 3),
                     "<br>p-value: ", signif(P_value, 3)
                   ))) +
@@ -1482,7 +1482,7 @@ plot_volcano <- function(volcano_data,Title, alpha = 0.05, fold_threshold = 0.5,
     theme_classic() +
     theme(legend.position = "none")+
     labs(title = Title,
-         x = "Fold Change",
+         x = "Mean Difference",
          y = ylab) +
     geom_hline(yintercept = -log10(alpha), linetype = "dashed", color = "blue") +
     geom_vline(xintercept = c(-fold_threshold, fold_threshold), linetype = "dashed", color = "black") +

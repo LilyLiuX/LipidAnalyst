@@ -1242,7 +1242,7 @@ server <- function(input, output,session) {
     # only show the selected lipid class data
     
     datatable(parsed_table(), 
-              editable = TRUE,   # <-- allow editing
+              editable = TRUE,   
               filter = "top",
               options = list(pageLength = 10), rownames = TRUE)
   })
@@ -2740,7 +2740,7 @@ server <- function(input, output,session) {
       stop("Missing required columns in lipid_df_samples: ", paste(setdiff(required_cols, colnames(lipid_df_samples)), collapse = ", "))
     }
     lipid_meta <- lipid_df_samples[, required_cols]
-    lipid_meta$fold_change <- lipid_meta[[var2_meta]] - lipid_meta[[var1_meta]]
+    lipid_meta$Mean_difference <- lipid_meta[[var2_meta]] - lipid_meta[[var1_meta]]
     
     
     lipid_meta <- merge(lipid_meta, t_test_result, by= "Name", all.x = TRUE)
@@ -2793,7 +2793,7 @@ server <- function(input, output,session) {
   
   output$download_volcano_data <- downloadHandler(
     filename = function() {
-      paste0("Ttest_w_fold_change_Data_", input$vol_var1, "_vs_", input$vol_var2, "_", Sys.Date(), ".csv")
+      paste0("Ttest_w_Mean_difference_Data_", input$vol_var1, "_vs_", input$vol_var2, "_", Sys.Date(), ".csv")
     },
     content = function(file) {
       req(volcano_df())
