@@ -1022,6 +1022,10 @@ ui <-dashboardPage(
               fluidRow(
                 column(width = 12,
                        scroll_box(title = "Volcano Plot Settings", status = "primary",
+                                  p("Volcano plots are a type of scatter plot that are used to visualize the results of differential expression analyses. 
+                                    They plot the negative logarithm of the p-value on the y-axis against the log fold change on the x-axis, 
+                                    allowing for easy identification of features that are both statistically significant and have a large magnitude of change."),
+                                  p("Features significancy is determined by welch's t-test and adjusted p values (Benjamini-Hochberg method)."),
                                   selectInput("vol_var1", "Select Control Variable:", choices = NULL),
                                   selectInput("vol_var2", "Select Experimental Variable:", choices = NULL),
                                   numericInput("p_value_threshold", "P value Threshold:", value = 0.05, min = 0, max = 1, step = 0.01),
