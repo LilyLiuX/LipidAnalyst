@@ -1102,7 +1102,10 @@ ui <-dashboardPage(
       tabItem(tabName = 'mean_cal',
               fluidRow(column(width = 12,
                               scroll_box(
-                                title = "Lipidomics Mean Calculator", 
+                                title = "Lipidomics Mean Calculator",
+                                p("This tool calculates the mean and standard deviation of lipid abundances for each lipid feature within each sample group."),
+                                p("It provides a summary of the average lipid levels and their variability within each group, 
+                                  facilitating comparisons between different experimental conditions or sample groups."),
                                 status = "primary",
                                 width = 12,  # <-- width goes **inside** the scroll_box
                                 actionButton("run_mean_cal", "Calculate Mean")
@@ -1501,6 +1504,8 @@ ui <-dashboardPage(
               fluidRow(
                 column(width = 12,
                        scroll_box(title = "Random Forest Model Settings", status = "primary",
+                                  p("Random Forest is an ensemble machine learning algorithm that builds multiple decision trees and combines their predictions to improve classification accuracy. "),
+                                  p("It is well suited for high-dimensional lipidomics data and provides feature importance rankings."),
                                   numericInput("rf_n_trees", "Number of Trees:", 
                                                value = 500, min = 50, step = 100),
                                   numericInput("data_partition"," Data Partition (Training Set %):", 
