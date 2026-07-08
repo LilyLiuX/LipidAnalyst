@@ -1234,6 +1234,31 @@ server <- function(input, output,session) {
   })
   
   ## ---- Parsing Name ----
+  
+  observeEvent(input$help_btn_parse_upload, {
+    showModal(modalDialog(
+      title = "Help Information",
+      tagList(
+        p("Upload your lipid parsing table in CSV format."),
+        p("This feature allows you to review and edit the parsed lipid information before using it in future analyses."),
+        p("The parsing table should contain the following columns: 
+          Name, Lipid.class, Chain1, Chain1.unsaturation, 
+          Chain2, Chain2.unsaturation, Chain3, Chain3.unsaturation, Total.carbon, Total.unsaturation, Clean.Name."),
+        p("Do not rename, remove, or reorder the required column names"),
+        p("Do not rename, or remove the lipid name column 'Name', as they are used to match the expression dataset."),
+        p("Missing values may be represented as NA, NaN, N/A, empty strings, or blank cells."),
+        p("Do not add or remove lipid entries. Only modify the existing parsing information if needed."),
+        p("An example parsing table is shown below."),
+        img(
+          src = "Parsing_instruction.png",
+          width = "100%",
+          style = "max-width:900px; border:1px solid #ddd;"
+        )
+      ),
+      easyClose = TRUE,
+      footer = modalButton("Close")
+    ))
+  })
  
   # Render the parsed lipid names table
   output$cleantable <- DT::renderDataTable({
@@ -1313,6 +1338,8 @@ server <- function(input, output,session) {
     
     parsed_table(df)   # <-- store in reactiveVal
   })
+  
+  
 
   observeEvent(input$cancel_parse_upload, {
     # ---------- Step 3: Go back to the default when cancel ----------
@@ -2802,6 +2829,7 @@ server <- function(input, output,session) {
   )
   ## ---- Mean Calculation ----
   updated_parsed_table_w_mean <- reactiveVal(NULL)
+  updated_parsed_table_w_mean_std <- reactiveVal(NULL)
   split_data <- reactiveVal(NULL)
   
   observeEvent({
@@ -2814,24 +2842,27 @@ server <- function(input, output,session) {
     split_data(split_d)
     dat <- calculate_group_means(split_d, 
                                  updated_parsed_table())
+    dat2 <- calculate_group_means_sdv(split_d, 
+                                   updated_parsed_table())
     updated_parsed_table_w_mean(dat)
-  })
+    updated_parsed_table_w_mean_std(dat2)
+    })
   
   output$download_mean_calculated <- downloadHandler(
     filename = function() {
       paste0("mean_calculated_data_", Sys.Date(), ".csv")
     },
     content = function(file) {
-      req(updated_parsed_table_w_mean())
-      write.csv(updated_parsed_table_w_mean(), file, row.names = TRUE)
+      req(updated_parsed_table_w_mean_std())
+      write.csv(updated_parsed_table_w_mean_std(), file, row.names = TRUE)
     }
   )
   
   output$Mean_Calculated_DataPreview <- DT::renderDataTable({
-    req(updated_parsed_table_w_mean(),input$run_mean_cal)
+    req(updated_parsed_table_w_mean_std(),input$run_mean_cal)
     showNotification("Mean calculation completed.", type = "message")
-    datatable(updated_parsed_table_w_mean(), options = list(pageLength = 10), rownames = TRUE)  %>%
-      formatRound(columns = which(sapply(updated_parsed_table_w_mean(), is.numeric)), digits = 4)
+    datatable(updated_parsed_table_w_mean_std(), options = list(pageLength = 10), rownames = TRUE)  %>%
+      formatRound(columns = which(sapply(updated_parsed_table_w_mean_std(), is.numeric)), digits = 4)
   })
   
   ## ---- T-test ----

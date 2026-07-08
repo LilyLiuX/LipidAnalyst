@@ -477,7 +477,9 @@ ui <-dashboardPage(
                                          p(HTML("<br>If you want to edit multiple points in the parse table,
                                                 we suggest download the parse table as a CSV file, make changes in Excel,
                                                 and upload the updated parse table using the file input below.")),
+                                         actionButton("help_btn_parse_upload", "Help", icon = icon("question-circle")),
                                          fileInput("new_parse_file", "Updated parse table Data File (CSV)"),
+                                         
                                          # cancel uploading 
                                          checkboxInput(
                                            "cancel_parse_upload",

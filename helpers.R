@@ -2190,6 +2190,40 @@ calculate_group_means <- function(split_data, lipid_df_samples = NULL) {
   }
 }
 
+calculate_group_means_sdv <- function(split_data, lipid_df_samples = NULL) {
+  # Calculate mean for each group
+  group_means <- lapply(split_data, function(x) {
+    colMeans(x, na.rm = TRUE)
+  })
+  
+  # Calculate standard deviation for each group
+  group_sds <- lapply(split_data, function(x) {
+    apply(x, 2, sd, na.rm = TRUE)
+  })
+  
+  # Convert to data frames
+  mean_df <- as.data.frame(group_means)
+  sd_df <- as.data.frame(group_sds)
+  
+  # Add lipid names
+  mean_df$Name <- rownames(mean_df)
+  sd_df$Name <- rownames(sd_df)
+  
+  # Rename columns
+  colnames(mean_df) <- c(paste0("Mean_group_", names(group_means)), "Name")
+  colnames(sd_df) <- c(paste0("SD_group_", names(group_sds)), "Name")
+  
+  # Merge mean and SD
+  result <- merge(mean_df, sd_df, by = "Name")
+  
+  # Merge with original lipid annotation if provided
+  if (!is.null(lipid_df_samples)) {
+    result <- merge(lipid_df_samples, result, by = "Name", all.x = TRUE)
+  }
+  
+  return(result)
+}
+
 append_mean_dataframe <- function(df, lipid_df_samples) {
   # Ensure mean_df has a 'Name' column
   if (!"Name" %in% colnames(lipid_df_samples)) {
