@@ -2726,6 +2726,13 @@ run_RF <- function(X, Y,
   
   X_train <- X[train_idx, , drop = FALSE]
   X_test  <- X[-train_idx, , drop = FALSE]
+  if (nrow(X_test) == 0) {
+    showNotification(
+      "Testing set has 0 samples. Please use a smaller data partition, such as 0.6–0.8, or use OOB evaluation when using all samples.",
+      type = "error", duration = 6
+    )
+    return(NULL)
+  }
   
   y_train <- y[train_idx]
   y_test  <- y[-train_idx]
