@@ -2331,7 +2331,6 @@ DSPC <- function(X, lambda = NULL, FDR = "BH") {
   
   # Partial correlations using de-biased Theta
   rho <- Theta_tilde / sqrt(diag(Theta_tilde) %o% diag(Theta_tilde))
-  
   partial_corr <- rho[idx]
   pvalue <- pvals[idx]
   
@@ -2381,7 +2380,7 @@ cor_mat_to_long <- function(cor_mat, remove_diag = TRUE, remove_duplicates = TRU
 }
 
 
-get_subnetworks <- function(long_df, max_cluster_size = 20, min_nodes = 5) {
+get_subnetworks <- function(long_df, max_cluster_size = 20, min_nodes = 5,seed=1234) {
   library(igraph)
   library(leidenAlg)
   
@@ -2415,6 +2414,7 @@ get_subnetworks <- function(long_df, max_cluster_size = 20, min_nodes = 5) {
   
   # Auto-tune Leiden resolution
   find_res <- function(g, max_sz) {
+    set.seed(seed)
     for (r in seq(0.1, 100, 0.1)) {
       cl <- leiden.community(g, resolution = r)
       if (all(table(cl$membership) <= max_sz)) return(cl)
@@ -2511,7 +2511,7 @@ plot_subnetwork <- function(subnet,title = NULL) {
       selectable = TRUE
     ) %>%
     visPhysics(enabled = FALSE) %>%     # fully disable physics
-    visLayout(randomSeed = 2926)%>%
+    visLayout(randomSeed = 1234)%>%
     visExport(
       type = "png",                # png / jpg / svg / gif
       name = "DSPC_Network",       # filename (without extension)
@@ -2523,7 +2523,7 @@ run_pls_model <- function(
     n_perm = 200,
     n_cv = 7,
     scale_method = "none",
-    seed = 2926
+    seed = 1234
 ) {
   library(ropls)
   # stopifnot(is.matrix(X) || is.data.frame(X))
@@ -2582,7 +2582,7 @@ run_opls_model <- function(
     n_perm = 200,
     n_cv = 7,
     scale_method = "none",
-    seed = 2926
+    seed = 1234
 ) {
   library(ropls)
   # stopifnot(is.matrix(X) || is.data.frame(X))
@@ -2686,7 +2686,7 @@ plot_opls_vip <- function(opls_model,
 run_RF <- function(X, Y,
                    data_partition = 0.6,
                    n_tree = 500,
-                   seed = 2926) {
+                   seed = 1234) {
   library(caret)
   # --- Validation ---
   if (!(is.matrix(X) || is.data.frame(X))) {

@@ -3513,7 +3513,7 @@ server <- function(input, output,session) {
   
   output$download_plsda_viptable <- downloadHandler(
     filename = function()  {
-      paste0("PLSDA_VIP_Table_",Sys.Date(),".csv.")
+      paste0("PLSDA_VIP_Table_",Sys.Date(),".csv")
     },
     content = function(file) {
       vip <- getVipVn(plsda_results())

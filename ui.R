@@ -455,8 +455,8 @@ ui <-dashboardPage(
                                            respectively. <code>Chain3</code> = not applicable. </li>",
                                            
                                            "<li><b>Glycerolipids</b> (e.g., MAG, TAG, DAG): ",
-                                           "<code>Chain1</code> to <code>Chain3</code> refer to fatty acyl chains at Sn1 to Sn3 carbons of the glycerol back bone, respectively.",
-                                           "For MAG, <code>chain2</code> and <code>chain3</code> are not applicable.</li>",
+                                           "<code>Chain1</code> to <code>Chain3</code> refer to fatty acyl chains at Sn1 to Sn3 carbons of the glycerol back bone, respectively. ",
+                                           "For MG, <code>chain2</code> and <code>chain3</code> are not applicable.</li>",
                                            
                                            "<li><b>Cholesteryl esters</b> (CE): ",
                                            "<code>Chain1</code> = esterified <b>fatty acid</b> chain, ",
