@@ -951,7 +951,13 @@ server <- function(input, output,session) {
     req(imputed_df_0())  
     data_to_impute <- imputed_df_0()
     method <- input$impute_method
-    k <- ifelse(method == "knn", input$knn_k, 5)
+    k <- if (method == "knn-featurewise") {
+      input$knn_k
+    } else if (method == "knn-samplewise") {
+      input$knn_k
+    } else {
+      5
+    }
     
     imputed_result <- impute_missing_values(data_to_impute, method = method, k = k)
     imputedData(imputed_result) 
@@ -1902,6 +1908,7 @@ server <- function(input, output,session) {
       df2 <- cuberoot(df1)
       showNotification("Cubic root transformation completed.", type = "message")
     }
+    
     if (input$norm3 == "mean_centered") {
       df3 <- mean_center(df2)
       showNotification("Mean centered transformation completed.", type = "message")
