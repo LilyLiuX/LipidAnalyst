@@ -956,37 +956,37 @@ ui <-dashboardPage(
                                                 "Heat color" = 'heat'
                                               ),
                                               selected = 'RWB'),
-                                  sliderInput("label_title_size","Select title font size for Heatmap:",
+                                  sliderInput("label_title_size","Title font size:",
                                               min = 2, max = 20,
                                               value = 14,
                                               step = 0.5),
                                   
-                                  sliderInput("label_x_size","Select x axis label font size for Heatmap:",
+                                  sliderInput("label_x_size","X axis label font size:",
                                               min = 1, max = 15,
                                               value = 8,
                                               step = 0.5),
                                   
-                                  sliderInput("label_y_size","Select y axis label font size for Heatmap:",
+                                  sliderInput("label_y_size","Y axis label font size:",
                                               min = 1, max = 15,
                                               value = 8,
                                               step = 0.5),
                                   
-                                  sliderInput("title_x_size","Select x axis title font size for Heatmap:",
+                                  sliderInput("title_x_size","X axis title font size:",
                                               min = 2, max = 20,
                                               value = 12,
                                               step = 0.5),
                                   
-                                  sliderInput("title_y_size","Select y axis title font size for Heatmap:",
+                                  sliderInput("title_y_size","Y axis title font size :",
                                               min = 2, max = 20,
                                               value = 12,
                                               step = 0.5),
                                   
-                                  sliderInput("legend_title_size","Select legend title font size for Heatmap:",
+                                  sliderInput("legend_title_size","Legend title font size:",
                                               min = 2, max = 20,
                                               value = 12,
                                               step = 0.5),
                                   
-                                  sliderInput("legend_text_size","Select legend text font size for Heatmap:",
+                                  sliderInput("legend_text_size","Legend text font size:",
                                               min = 1, max = 15,
                                               value = 8,
                                               step = 0.5),
@@ -1035,17 +1035,53 @@ ui <-dashboardPage(
                                   p("Difference was defined as the difference in mean lipid abundance between the two groups. 
                                     This metric was used instead of a ratio because normalized or transformed abundance values 
                                     may include negative values, making ratio-based fold change inappropriate."),
+                                  checkboxInput("show_labels_volcano", "Show labels for significant lipids", value = TRUE),
                                   checkboxInput("Adj_y", "Adjusted p value on the Y axis", value = F),
                                   actionButton("generate_volcano_plot", "Generate Volcano Plot"),
                                   width = 12),
                        scroll_box(title="Pixel size settings for downloading plots", status = "primary",
-                                  numericInput("width_volcano", "Width (in inches):", value = 10, step = 0.5),
-                                  numericInput("height_volcano", "Height (in inches):", value = 6, step = 0.5),
+                                  numericInput("width_volcano", "Width (in inches):", value = 12, step = 0.5),
+                                  numericInput("height_volcano", "Height (in inches):", value = 9, step = 0.5),
                                   sliderInput("DPI_volcano","Select the dots per inch (DPI) for downloading plot:",
-                                              min = 60, max =600,value=100,step=10),
+                                              min = 60, max =600,value=80,step=10),
                                   uiOutput("pixel_info_volcano"),
-                                  width = 12,collapsed = T
+                                  width = 6,collapsed = T
                        ),
+  
+                      scroll_box(title ="Font and Color Settings", status ="primary",
+                                 
+                                sliderInput("point_size_volcano","Point size:",
+                                            min = 0.1, max = 3.6,
+                                            value = 1.2,
+                                            step = 0.1),
+                                sliderInput("sig_label_size_volcano","Font size for significant lipids:",
+                                            min = 1, max = 15,
+                                            value = 3,
+                                            step = 0.5),
+                                 sliderInput("label_x_size_volcano","X axis label font size:",
+                                             min = 1, max = 30,
+                                             value = 12,
+                                             step = 0.5),
+                                 
+                                 sliderInput("label_y_size_volcano","Y axis label font size:",
+                                             min = 1, max = 30,
+                                             value = 12,
+                                             step = 0.5),
+                                 
+                                 sliderInput("title_x_size_volcano","X axis title font size:",
+                                             min = 2, max = 30,
+                                             value = 12,
+                                             step = 0.5),
+                                 
+                                 sliderInput("title_y_size_volcano","Y axis title font size:",
+                                             min = 2, max = 30,
+                                             value = 12,
+                                             step = 0.5),
+                                sliderInput("label_title_size_volcano","Title font size:",
+                                            min = 2, max = 30,
+                                            value = 16,
+                                            step = 0.5),
+                                 width = 6,collapsed = T),
                        scroll_box(title = "Volcano Plot Output", status = "info",
                                   downloadButton("download_volcano_plot", "Download Volcano Plot (.png)"),
                                   uiOutput("volcano_plotUI"),
@@ -1170,6 +1206,8 @@ ui <-dashboardPage(
                                 title = "ANOVA Settings", 
                                 status = "primary",
                                 width = 12,  # <-- width goes **inside** the scroll_box
+                                p("ANOVA (Analysis of Variance) is a statistical method used to compare the means of three or more groups to determine if there are significant differences among them. 
+                                  It assesses whether the observed variations in the data can be attributed to the group factor or if they are likely due to random chance."),
                                 actionButton("run_anova", "Run ANOVA")
                                 
                               )

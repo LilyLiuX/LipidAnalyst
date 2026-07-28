@@ -135,6 +135,13 @@ detect_group_missing_threshold <- function(df, metadata, group_var, threshold = 
   # metadata: data frame with samples as rows and group info
   # group_var: column name in metadata that defines groups
   # threshold: fraction of missing values to flag a lipid (default = 0.95)
+  if (threshold < 0 || threshold > 1 || is.null(threshold) ||is.na(threshold)) {
+    showNotification(
+      "Threshold must be between 0 and 1.",
+      type = "error"
+    )
+    return(NULL)
+  }
   
   groups <- unique(metadata[[group_var]])
   result_list <- list()
@@ -1451,40 +1458,89 @@ plot_group_distribution <- function(df,
   return(p)
 }
 
-plot_volcano <- function(volcano_data,Title, alpha = 0.05, fold_threshold = 0.5,adj = TRUE) {
+plot_volcano <- function(volcano_data,
+                         parse_tb = NULL,
+                         title = NULL, 
+                         p_value_threshold = 0.05, 
+                         fold_threshold = 0.5,
+                         point_size = 1.2,
+                         sig_label_size = 3,
+                         x_title_size = 16,
+                         y_title_size = 16,
+                         x_tick_label_size = 14,
+                         y_tick_label_size = 14,
+                         plot_title_size = 18,
+                         show_labels = TRUE,
+                         adj = FALSE) {
   
+  if (!is.null(parse_tb)) {
+    
+    match_index <- match(volcano_data$Name, parse_tb$Name)
+    
+    volcano_data$Lipid.class <- parse_tb$Lipid.class[match_index]
+    
+    # Replace unmatched lipid classes
+    volcano_data$Lipid.class[
+      is.na(volcano_data$Lipid.class)
+    ] <- "Unknown"
+    
+  } else {
+    volcano_data$Lipid.class <- "Unknown"
+  }
+  lipid_classes <- sort(unique(volcano_data$Lipid.class))
   
-  if (adj){
-    volcano_data$neglog10_p_value <- -log10(volcano_data$Adjusted_P_value)
+  custom_colors <- setNames(
+    colorRampPalette(brewer.pal(12, "Set3"))(length(lipid_classes)),
+    lipid_classes
+  )
+  
+  # in case p value is 0, we need to set a minimum value to avoid Inf in the plot
+  if (adj) {
+    volcano_data$neglog10_p_value <- -log10(
+      pmax(volcano_data$Adjusted_P_value, .Machine$double.xmin)
+    )
     ylab <- "-log10(Adjusted p-value)"
-  }else{
-    volcano_data$neglog10_p_value <- -log10(volcano_data$P_value)
+  } else {
+    volcano_data$neglog10_p_value <- -log10(
+      pmax(volcano_data$P_value, .Machine$double.xmin)
+    )
     ylab <- "-log10(p-value)"
   }
   
-  volcano_data$Significant <- ifelse(volcano_data$neglog10_p_value > -log10(alpha), "Significant", "Not Significant")
+  volcano_data$Significant <- ifelse(volcano_data$neglog10_p_value > -log10(p_value_threshold), "Significant", "Not Significant")
   volcano_data$Category <- with(volcano_data, ifelse(Significant == "Significant"
                                                      & (Mean_difference <= -fold_threshold
                                                         | Mean_difference >= fold_threshold),
                                                      "Significant & Beyond Threshold",
                                                      ifelse(Significant == "Significant", "Significant", "Not Significant")))
+  # Fix factor order for shape legend
+  volcano_data$Category <- factor(
+    volcano_data$Category,
+    levels = c(
+      "Not Significant",
+      "Significant",
+      "Significant & Beyond Threshold"
+    )
+  )
   
   p <- ggplot(volcano_data, 
-              aes(x = Mean_difference, y = neglog10_p_value, color = Category,
+              aes(x = Mean_difference, y = neglog10_p_value, color = Lipid.class,
+                  # shape = Category,
                   text = paste0(
                     "Name: ", Name,
                     "<br>Mean Difference: ", round(Mean_difference, 3),
                     "<br>-log10(p): ", round(neglog10_p_value, 3),
-                    "<br>p-value: ", signif(P_value, 3)
+                    "<br>p-value: ", signif(P_value, 3),
+                    "<br>Adjusted p-value: ", signif(Adjusted_P_value, 3)
                   ))) +
-    geom_point(alpha = 0.8, size = 1.2) +
-    scale_color_manual(values = c("Not Significant" = "grey", "Significant & Beyond Threshold" = "red","Significant" = "black")) +
+    geom_point(alpha = 0.8, size = point_size) +
+    # scale_color_manual(values = c("Not Significant" = "grey", "Significant & Beyond Threshold" = "red","Significant" = "black")) +
     theme_classic() +
-    theme(legend.position = "none")+
-    labs(title = Title,
+    # theme(legend.position = "none")+
+    labs(title = title,
          x = "Mean Difference",
          y = ylab) +
-    geom_hline(yintercept = -log10(alpha), linetype = "dashed", color = "blue") +
+    geom_hline(yintercept = -log10(p_value_threshold), linetype = "dashed", color = "blue") +
     geom_vline(xintercept = c(-fold_threshold, fold_threshold), linetype = "dashed", color = "black") +
     annotate("text", x = fold_threshold, y = 0, 
              label = paste0("+", fold_threshold), 
@@ -1492,10 +1548,37 @@ plot_volcano <- function(volcano_data,Title, alpha = 0.05, fold_threshold = 0.5,
     annotate("text", x = -fold_threshold, y = 0, 
              label = paste0("-", fold_threshold), 
              hjust = 1.1, vjust = -0.5, color = "black", size = 3) +
-    geom_text(
-      data = subset(volcano_data, Category == "Significant & Beyond Threshold"),
-      aes(label = Name),
-      size = 3, color = "black")
+    scale_color_manual(
+      values = custom_colors,
+      name = "Lipid Class"
+    ) 
+  # +
+  #   scale_shape_manual(
+  #     values = c(
+  #       "Not Significant" = 16, # dot
+  #       "Significant" = 17, # triangle
+  #       "Significant & Beyond Threshold" = 15 # square
+  #     ),
+  #     name = "Significance"
+  #   )
+  p <- p +
+    theme(
+      plot.title = element_text(size = plot_title_size),  
+      axis.title.x = element_text(size = x_title_size),   # x-axis title
+      axis.title.y = element_text(size = y_title_size),   # y-axis title
+      axis.text.x  = element_text(size = x_tick_label_size),   # x-axis tick labels
+      axis.text.y  = element_text(size = y_tick_label_size)   # y-axis tick labels
+    )
+  
+  if (show_labels) {
+    p <- p +
+        geom_text(
+        data = subset(volcano_data, Category == "Significant & Beyond Threshold"),
+        aes(label = Name),
+        size = sig_label_size, 
+        color = "black",
+        show.legend = FALSE)
+  }
   
   p
 }
@@ -2072,6 +2155,27 @@ correlation_heatmap_plotly <- function(df,color_setting,group_name) {
   return(p)
 }
 
+# ---- Display format ----
+# make sure the display stay the same
+ctrl_display <- function(display_max = 900, width = 800, height = 600) {
+  
+  aspect_ratio <- height / width
+  
+  if (is.null(width) || is.null(height)) {
+    return(list(width = display_max, height = display_max * 4 / 3))  # default to 4:3 aspect ratio
+  }
+  if (width >= height) {
+    display_width  <- display_max
+    display_height <- display_max * aspect_ratio
+  } else {
+    display_height <- display_max
+    display_width  <- display_max / aspect_ratio
+  }
+  
+  return(list(width = display_width, height = display_height))
+}
+
+
 # ---- Statistical testing ----
 split_group_labels <- function(dat, metadata, group_col = 2) {
   # Extract unique group labels from the specified column
@@ -2380,7 +2484,7 @@ cor_mat_to_long <- function(cor_mat, remove_diag = TRUE, remove_duplicates = TRU
 }
 
 
-get_subnetworks <- function(long_df, max_cluster_size = 20, min_nodes = 5,seed=1234) {
+get_subnetworks <- function(long_df, max_cluster_size = 20, min_nodes = 5,seed=2926) {
   library(igraph)
   library(leidenAlg)
   
@@ -2511,7 +2615,7 @@ plot_subnetwork <- function(subnet,title = NULL) {
       selectable = TRUE
     ) %>%
     visPhysics(enabled = FALSE) %>%     # fully disable physics
-    visLayout(randomSeed = 1234)%>%
+    visLayout(randomSeed = 2926)%>%
     visExport(
       type = "png",                # png / jpg / svg / gif
       name = "DSPC_Network",       # filename (without extension)
@@ -2523,7 +2627,7 @@ run_pls_model <- function(
     n_perm = 200,
     n_cv = 7,
     scale_method = "none",
-    seed = 1234
+    seed = 2926
 ) {
   library(ropls)
   # stopifnot(is.matrix(X) || is.data.frame(X))
@@ -2582,7 +2686,7 @@ run_opls_model <- function(
     n_perm = 200,
     n_cv = 7,
     scale_method = "none",
-    seed = 1234
+    seed = 2926
 ) {
   library(ropls)
   # stopifnot(is.matrix(X) || is.data.frame(X))
@@ -2686,7 +2790,7 @@ plot_opls_vip <- function(opls_model,
 run_RF <- function(X, Y,
                    data_partition = 0.6,
                    n_tree = 500,
-                   seed = 1234) {
+                   seed = 2926) {
   library(caret)
   # --- Validation ---
   if (!(is.matrix(X) || is.data.frame(X))) {

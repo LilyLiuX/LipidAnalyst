@@ -2150,11 +2150,11 @@ server <- function(input, output,session) {
     
     width_px  <- input$width_BP  * input$DPI_BP
     height_px <- input$height_BP * input$DPI_BP
-    
+    display_format <- ctrl_display(display_max = 900, width = width_px, height = height_px)
     withSpinner(plotlyOutput(
       "boxPlot",
-      width  = paste0(width_px, "px"),
-      height = paste0(height_px, "px")
+      width  = paste0(display_format$width, "px"),
+      height = paste0(display_format$height, "px")
     ))
   })
     
@@ -2168,7 +2168,10 @@ server <- function(input, output,session) {
       paste0("Boxplot_", gsub(" ", "_", input$boxplot_var), "_", Sys.Date(), ".png")
     },
     content = function(file) {
-      png(file, width = input$width_BP  * input$DPI_BP, height = input$height_BP  * input$DPI_BP)
+      png(file, 
+          width = input$width_BP  * input$DPI_BP, 
+          height = input$height_BP  * input$DPI_BP,
+          res = input$DPI_BP)
       plot_fun <- box_plot_obj()
 
       print(plot_fun)
@@ -2195,11 +2198,12 @@ server <- function(input, output,session) {
     
     width_px  <- input$width_PCA  * input$DPI_PCA
     height_px <- input$height_PCA * input$DPI_PCA
+    display_format <- ctrl_display(display_max = 900, width = width_px, height = height_px)
     
     withSpinner(plotlyOutput(
       "PCAPlot",
-      width  = paste0(width_px, "px"),
-      height = paste0(height_px, "px")
+      width  = paste0(display_format$width, "px"),
+      height = paste0(display_format$height, "px")
     ))
   })
   
@@ -2261,9 +2265,8 @@ server <- function(input, output,session) {
         
         png(
           filename = file,
-          width = input$width_PCA,
-          height = input$height_PCA,
-          units = "in",
+          width = input$width_PCA * input$DPI_PCA,
+          height = input$height_PCA * input$DPI_PCA,
           res = input$DPI_PCA
         )
         
@@ -2436,11 +2439,12 @@ server <- function(input, output,session) {
     
     width_px  <- input$width_CP  * input$DPI_CP
     height_px <- input$height_CP * input$DPI_CP
+    display_format <- ctrl_display(display_max = 900, width = width_px, height = height_px)
     
     withSpinner(plotlyOutput(
       "Lipid_class_plot",
-      width  = paste0(width_px, "px"),
-      height = paste0(height_px, "px")
+      width  = paste0(display_format$width, "px"),
+      height = paste0(display_format$height, "px")
     ))
   })
   
@@ -2456,7 +2460,10 @@ server <- function(input, output,session) {
     },
     content = function(file) {
       req(lipid_class_plot_obj())
-      png(file, width = input$width_CP  * input$DPI_CP, height = input$height_CP  * input$DPI_CP)
+      png(file, 
+          width = input$width_CP  * input$DPI_CP, 
+          height = input$height_CP  * input$DPI_CP,
+          res = input$DPI_CP)
       plot_fun <- lipid_class_plot_obj()
       
       print(plot_fun)
@@ -2551,11 +2558,11 @@ server <- function(input, output,session) {
     
     width_px  <- input$width_IP  * input$DPI_IP
     height_px <- input$height_IP * input$DPI_IP
-    
+    display_format <- ctrl_display(display_max = 900, width = width_px, height = height_px)
     withSpinner(plotlyOutput(
       "single_lipid_plot",
-      width  = paste0(width_px, "px"),
-      height = paste0(height_px, "px")
+      width  = paste0(display_format$width, "px"),
+      height = paste0(display_format$height, "px")
     ))
   })
   output$single_lipid_plot <- renderPlotly({
@@ -2570,7 +2577,7 @@ server <- function(input, output,session) {
     },
     content = function(file) {
       req(lipid_indi_plot_obj())
-      png(file, width = input$width_IP  * input$DPI_IP, height = input$height_IP  * input$DPI_IP)
+      png(file, width = input$width_IP  * input$DPI_IP, height = input$height_IP  * input$DPI_IP, res = input$DPI_IP)
       plot_fun <- lipid_indi_plot_obj()
       
       print(plot_fun)
@@ -2579,7 +2586,7 @@ server <- function(input, output,session) {
     }
   )
   
-  ## ---- Lipid Class Heatmap Plot ----
+  ## ---- DMLH ----
 
   observeEvent(updated_parsed_table_w_mean(), {
     updateSelectInput(session,
@@ -2652,7 +2659,7 @@ server <- function(input, output,session) {
     req(input$width_LCH, input$height_LCH, input$DPI_LCH)
     pixel_width <- input$width_LCH * input$DPI_LCH
     pixel_height <- input$height_LCH * input$DPI_LCH
-    
+    display_format <- ctrl_display(display_max = 600, width = pixel_width, height = pixel_height)
     tagList(
       lapply(plot_groups, function(group) {
         fluidRow(
@@ -2661,10 +2668,10 @@ server <- function(input, output,session) {
               width = 6,
               div(
                 style = paste0(
-                  "width:", pixel_width, "px; height:", pixel_height,
+                  "width:", display_format$width, "px; height:", display_format$height,
                   "px; overflow:hidden; margin: 0 auto;"
                 ),
-                withSpinner(plotOutput(outputId = name, height = paste0(pixel_height, "px"), width = paste0(pixel_width, "px")))
+                withSpinner(plotOutput(outputId = name, height = paste0(display_format$height, "px"), width = paste0(display_format$width, "px")))
               ),
               br(),
               div(style = "text-align: center;font-size: 16px;", strong(name)),
@@ -2684,7 +2691,7 @@ server <- function(input, output,session) {
         plotname <- name
         output[[plotname]] <- renderPlot({
           all_plots()[[plotname]]
-        }, res = input$DPI_LCH)
+        }, res = 96)
       })
     })
   })
@@ -2753,7 +2760,9 @@ server <- function(input, output,session) {
                       choices = unique(metadataWithGroup()[[input$define_group]]),
                       selected = unique(metadataWithGroup()[[input$define_group]])[2])
   })
+  
   volcano_df <- reactiveVal(NULL)
+  
   volcano_plot_obj <- reactive({
     req(input$vol_var1, input$vol_var2, updated_parsed_table_w_mean(), input$generate_volcano_plot)
     lipid_df_samples <- updated_parsed_table_w_mean()
@@ -2783,21 +2792,34 @@ server <- function(input, output,session) {
     volcano_df(lipid_meta[order(lipid_meta$Adjusted_P_value), ])  # Sort by adjusted p-value
     # Create a volcano plot
     plot <- plot_volcano (lipid_meta,
-                          title,
-                          alpha = input$p_value_threshold ,
-                          fold_threshold = input$fc_threshold ,adj = input$Adj_y)
+                          parse_tb = updated_parsed_table_w_mean(),
+                          title = title,
+                          p_value_threshold  = input$p_value_threshold ,
+                          fold_threshold = input$fc_threshold,
+                          point_size = input$point_size_volcano,
+                          sig_label_size = input$sig_label_size_volcano,
+                          x_title_size = input$title_x_size_volcano,
+                          y_title_size = input$title_y_size_volcano,
+                          x_tick_label_size = input$label_x_size_volcano,
+                          y_tick_label_size = input$label_y_size_volcano,
+                          plot_title_size = input$label_title_size_volcano,
+                          show_labels = input$show_labels_volcano,
+                          adj = input$Adj_y)
     
     return(plot)
   })
+  
   output$volcano_plotUI <- renderUI({
     
     width_px  <- input$width_volcano  * input$DPI_volcano
     height_px <- input$height_volcano * input$DPI_volcano
     
+    display_format <- ctrl_display(display_max = 900, width = width_px, height = height_px)
+    
     withSpinner(plotlyOutput(
       "volcanoPlot",
-      width  = paste0(width_px, "px"),
-      height = paste0(height_px, "px")
+      width  = paste0(display_format$width, "px"),
+      height = paste0(display_format$height, "px")
     ))
   })
   
@@ -2813,7 +2835,8 @@ server <- function(input, output,session) {
     content = function(file) {
       png(file, 
           width = input$width_volcano  * input$DPI_volcano, 
-          height = input$height_volcano * input$DPI_volcano)
+          height = input$height_volcano * input$DPI_volcano,
+          res = input$DPI_volcano)
       print(volcano_plot_obj())
       dev.off()
     }
@@ -3857,15 +3880,15 @@ server <- function(input, output,session) {
         imputed_data    = list(path = file.path(data_dir, paste0("imputed_lipid_data_", Sys.Date(), ".csv")), data = imputedData()),
         imputed_is      = list(path = file.path(data_dir, paste0("imputed_internal_standard_", Sys.Date(), ".csv")), data = imputedInternalStandard()),
         cleantable      = list(path = file.path(data_dir, paste0("parsed_lipid_names_", Sys.Date(), ".csv")), data = parsed_table()),
-        combined_data   = list(path = file.path(data_dir, paste0("combined_lipid_data_", Sys.Date(), ".csv")), data = combinedData()),
+        combined_data   = list(path = file.path(data_dir, paste0("combined_lipid_data_", Sys.Date(), ".csv")), data = processedData()), # change from combined_data to processedData
         updated_parsed  = list(path = file.path(data_dir, paste0("updated_parsed_table_", Sys.Date(), ".csv")), data = updated_parsed_table()),
         normalized      = list(path = file.path(data_dir, paste0("normalized_by_internal_standard_", Sys.Date(), ".csv")), data = internal_normed_matirx()),
         meta_normalized = list(path = file.path(data_dir, paste0("meta_normalized_data_", Sys.Date(), ".csv")), data = meta_normed_matrix2()),
         plan_normalized = list(path = file.path(data_dir, paste0("normalized_data_", Sys.Date(), ".csv")), data = normalized_plan_data()),
         mean_calculated = list(path = file.path(data_dir, paste0("mean_calculated_data_", Sys.Date(), ".csv")), data = updated_parsed_table_w_mean())
       )
-      
-      if (exists("volcano_df") && !is.null(volcano_df())) {
+
+      if (!is.null(volcano_df())) {
         files$volcano <- list(
           path = file.path(data_dir, paste0("volcano_results_", Sys.Date(), ".csv")),
           data = volcano_df()
@@ -3905,19 +3928,19 @@ server <- function(input, output,session) {
             data = df
           )}
       }
-      
+
       if (!is.null(rf_results())) {
         importance_df <- rf_results()$importance
-        df <- data.frame(
+        importance_df_2<- data.frame(
           Lipid = importance_df$feature,
           MeanDecreaseGini = importance_df$MeanDecreaseGini,
           MeanDecreaseAccuracy = importance_df$MeanDecreaseAccuracy,
           row.names = NULL
         )
-        if(!is.null(df)){
+        if(!is.null(importance_df_2)){
           files$rf_vip <- list(
             path = file.path(data_dir, paste0("RandomForest_VariableImportance_Table_", Sys.Date(), ".csv")),
-            data = df
+            data = importance_df_2
           )}
       }
       
