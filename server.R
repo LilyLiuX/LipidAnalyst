@@ -2616,12 +2616,12 @@ server <- function(input, output,session) {
   observeEvent(input$generate_LCH_plots, {
     req( updated_parsed_table_w_mean())
     color_scheme <- switch(input$color_code_LCH,
-                           "RWB"   = list(low = "blue", mid = "white", high = "red", na = "grey90"),
-                           "BGY"       = list(low = "#08306B", mid = "#41B6C4", high = "#FFFFB2", na = "grey90"),
-                           "OWB"       = list(low = "#E66101", mid = "white", high = "#0C2C84", na = "grey90"),
-                           "greyscale" = list(low = "grey90", mid = "grey70", high = "black", na = "grey95"),
-                           "viridis"   = list(low = viridis::viridis(3)[1], mid = viridis::viridis(3)[2], high = viridis::viridis(3)[3], na = "grey90"),
-                           "heat"      = list(low = "yellow", mid = "orange", high = "red", na = "grey90")
+                           "RWB"   = list(low = "blue", mid = "white", high = "red", na = "grey80"),
+                           "BGY"       = list(low = "#08306B", mid = "#41B6C4", high = "#FFFFB2", na = "grey80"),
+                           "OWB"       = list(low = "#0C2C84", mid = "white", high = "#E66101", na = "grey80"),
+                           "greyscale" = list(low = "grey80", mid = "grey70", high = "black", na = "grey90"),
+                           "viridis"   = list(low = viridis::viridis(3)[1], mid = viridis::viridis(3)[2], high = viridis::viridis(3)[3], na = "grey80"),
+                           "heat"      = list(low = "yellow", mid = "orange", high = "red", na = "grey80")
     )
     plt_list <- list()
     groups <- colnames(updated_parsed_table_w_mean())[(ncol(updated_parsed_table_w_mean())-ngroup()+1):ncol(updated_parsed_table_w_mean())]

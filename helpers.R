@@ -1873,7 +1873,16 @@ create_LCHplot_single <- function(label_text = TRUE,
                                   legend_title_size=14,
                                   legend_text_size=12,
                                   sequence = "Based on total carbon number",
-                                  color_scheme = list(low = "blue", mid = "white", high = "red", na = "grey90")) {
+                                  color_scheme = list(low = "blue", mid = "white", high = "red", na = "grey80")) {
+  if (identical(
+    color_scheme,
+    list(low = "grey80", mid = "grey70", high = "black", na = "grey90")
+  )){
+    background_color <- "white"
+  }
+  else{
+    background_color <- "grey70"
+  }
   
   double_chain <- unique(lipid_df_samples$Lipid.class[!is.na(lipid_df_samples$Chain2)])
   
@@ -1921,7 +1930,7 @@ create_LCHplot_single <- function(label_text = TRUE,
     )
     
     p <- ggplot(df_subset, aes(x = Total.carbon, y = Total.unsaturation, fill = .data[[group_selection]])) +
-      geom_tile(color = "white", width = 1, height = 1) +
+      geom_tile(color = background_color , width = 1, height = 1) +
       scale_fill_gradient2(
         low = color_scheme$low,
         mid = color_scheme$mid,
@@ -1986,7 +1995,7 @@ create_LCHplot_single <- function(label_text = TRUE,
       range_min
     )
     p <- ggplot(df_subset, aes(x = x_var, y = y_var, fill =  .data[[group_selection]])) +
-      geom_tile(color = "white", width = 1, height = 1) +
+      geom_tile(color = background_color , width = 1, height = 1) +
       scale_fill_gradient2(
         low = color_scheme$low,
         mid = color_scheme$mid,

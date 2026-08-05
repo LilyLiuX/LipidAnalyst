@@ -949,7 +949,7 @@ ui <-dashboardPage(
                                   selectInput("color_code_LCH", "Select the color code for the plot:",
                                               choices = list(
                                                 'Default: Red/Blue' = "RWB",
-                                                'Blue/Green/Yellow' = "BGY",
+                                                'Yellow/Green/Blue' = "BGY",
                                                 'Orange/Blue' = "OWB",
                                                 'Grey Scale' = "greyscale",
                                                 'Viridis color'= 'viridis',
