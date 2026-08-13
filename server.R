@@ -1445,12 +1445,15 @@ server <- function(input, output,session) {
       footer = modalButton("Close")
     ))
   })
+  
   output$lipid_class_boxplot <- renderPlotly({
-    df <-log2(processedData() + 1)
+    # the pseudo count is to avoid log2(0) = -Inf, which will cause the boxplot to be not displayed
+    df <-log2(processedData() + min(processedData()[processedData() > 0], na.rm = TRUE)/100)
     p <- boxplot_lipid_class(df,parsed_table(),
                              Title = "Boxplot of Lipid Class Averages Across Samples(Log2-Transformed)")
     ggplotly(p)  
     })
+  
   output$sample_boxplot <- renderPlotly({
     df_p <- processedData()
     if (nrow(df_p) >= 80) {
@@ -1478,7 +1481,7 @@ server <- function(input, output,session) {
     }
     else{
     df_p <- as.data.frame(t(df_p))
-    df_log <- log2(df_p + 1)
+    df_log <- log2(df_p + min(df_p[df_p > 0], na.rm = TRUE)/100)
     temp_plot <- create_boxplot(df_log,"Boxplot for samples(Log2-Transformed)")
     ggplotly(temp_plot)
     }
@@ -1877,15 +1880,15 @@ server <- function(input, output,session) {
     }
     else if(input$norm2 == "log_t"){
       if(input$log_base == "ln"){
-        df2 <- log(df1)
+        df2 <- log(df1 + min(df1[df1 > 0], na.rm = TRUE)/100)
         showNotification("Nature log transformation completed.", type = "message")
       }
       else if(input$log_base == "log2"){
-        df2 <- log2(df1)
+        df2 <- log2(df1 + min(df1[df1 > 0], na.rm = TRUE)/100)
         showNotification("Log2 transformation completed.", type = "message")
       }
       else if(input$log_base == "log10"){
-        df2 <- log10(df1)
+        df2 <- log10(df1 + min(df1[df1 > 0], na.rm = TRUE)/100)
         showNotification("Log10 transformation completed.", type = "message")
       }
     }
@@ -2698,7 +2701,7 @@ server <- function(input, output,session) {
   
   output$download_selection <- downloadHandler(
     filename = function() {
-      paste0("differential_mean_lipid_heatmaps_selection_",Sys.Date(), ".zip")
+      paste0("Differential_mean_lipid_heatmaps_selection_",Sys.Date(), ".zip")
     },
     content = function(file) {
       showModal(modalDialog(
@@ -2724,7 +2727,7 @@ server <- function(input, output,session) {
   
   output$download_zip <- downloadHandler(
     filename = function() {
-      paste0("differential_mean_lipid_heatmaps_",Sys.Date(), ".zip")
+      paste0("Differential_mean_lipid_heatmaps_",Sys.Date(), ".zip")
     },
     content = function(file) {
       showModal(modalDialog(

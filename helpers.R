@@ -382,18 +382,18 @@ parse_name <- function(names, IS=F){
     
     if (!detect_chain(name) & IS == F) {
       #name trim white space and to lower
-      name <- tolower(gsub("\\s+$", "", name))
-      name <- gsub("^\\s+", "", name)
+      name_clean <- tolower(gsub("\\s+$", "", name))
+      name_clean <- gsub("^\\s+", "", name)
       
       
-      result <- lipid_lookup[[name]]
+      result <- lipid_lookup[[name_clean]]
       name_2 <- if (!is.null(result)) result else name
     } else {
       name_2 <- name
     }
     
     
-    # remove O- p-, if theres is any in name_2
+    # remove O- P-, if theres is any in name_2
     # adding this code above is to clearly identify the lipids when O- is at front.
     name_class <- gsub("O-|P-", "", name_2)
     name_class <- clean_names(name_class)
@@ -480,7 +480,7 @@ parse_name <- function(names, IS=F){
       }
       total_chain_split <- parse_chain(total_chain)
       table <- data.frame(
-        `Name` = name_2,
+        `Name` = name,
         `Lipid class` = lipid_class,
         `Chain1` = sn1_split[1],
         `Chain1 unsaturation` = sn1_split[2],
@@ -530,7 +530,7 @@ parse_name <- function(names, IS=F){
         }
       }
       table <- data.frame(
-        `Name` = name_2,
+        `Name` = name,
         `Lipid class` = lipid_class,
         `Chain1` = chain1[1],
         `Chain1 unsaturation` = chain1[2],
@@ -574,7 +574,7 @@ parse_name <- function(names, IS=F){
         }
       }
       table <- data.frame(
-        `Name` = name_2,
+        `Name` = name,
         `Lipid class` = lipid_class,
         `Chain1` = chain1[1],
         `Chain1 unsaturation` = chain1[2],
