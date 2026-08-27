@@ -1197,14 +1197,22 @@ no_scale <- function(df) {
 }
 
 # ---- Plots ----
-boxplot_lipid_class <- function(dat, lipid_df_samples,
-                                Title =  "Boxplot of Lipid Class Averages Across Samples") {
-  dat <- t(dat)
-  dat <- as.data.frame(dat)
-  
+boxplot_lipid_class <- function(dat, 
+                                lipid_df_samples,
+                                color_set = "Set3",
+                                Title =  "Boxplot of Lipid Class Averages Across Samples",
+                                title_size = 15,
+                                text_x_size = 12,
+                                text_y_size = 12,
+                                title_x_size = 16,
+                                title_y_size = 16,
+                                legend_title_size = 13,
+                                legend_text_size = 11) {
   # dat:samples x lipid (rownames = sample names , colnames =lipid names)
   # lipid_df_samples: lipid annotation table (Name = lipid name, Lipid.class = class)
   # Match lipid info to data rows
+  dat <- t(dat)
+  dat <- as.data.frame(dat)
   lipid_df_samples <- lipid_df_samples[match(rownames(dat), lipid_df_samples$Name), ]
   dat$Lipid_Class <- lipid_df_samples$Lipid.class
   # Group by lipid class and calculate average intensity per sample
@@ -1222,20 +1230,56 @@ boxplot_lipid_class <- function(dat, lipid_df_samples,
   
   # Generate a palette with enough colors for all lipid classes
   n_classes <- length(unique(df_long$Lipid_Class))
-  custom_colors <- colorRampPalette(brewer.pal(12, "Set3"))(n_classes)
+  # custom_colors <- colorRampPalette(brewer.pal(12, "Set3"))(n_classes)
+  
+  if (color_set == "viridis") {
+    custom_colors <- viridisLite::viridis(n_classes)
+  } else {
+    valid_palettes <- rownames(RColorBrewer::brewer.pal.info)
+    
+    if (!color_set %in% valid_palettes) {
+      stop(
+        "`color_set` must be an RColorBrewer palette or 'viridis'. ",
+        "Examples: 'Dark2', 'Set2', 'Set3', 'Paired', 'viridis'."
+      )
+    }
+    
+    max_colors <- RColorBrewer::brewer.pal.info[color_set, "maxcolors"]
+    base_colors <- RColorBrewer::brewer.pal(max_colors, color_set)
+    
+    custom_colors <- grDevices::colorRampPalette(base_colors)(n_classes)
+  }
   
   # Plot
-  ggplot(df_long, aes(x = Lipid_Class, y = Mean_Value, fill = Lipid_Class)) +
+  temp_plot <- ggplot(df_long, 
+         aes(x = Lipid_Class, y = Mean_Value, fill = Lipid_Class)) +
     geom_boxplot() +
     labs(x = "Lipid Class", y = "Average Intensity",
          title = Title) +
     theme_bw() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    theme(
+      plot.title = element_text(size = title_size),
+      axis.text.x = element_text(size = text_x_size,angle = 60, vjust = 0.5, hjust = 0.5),
+      axis.text.y = element_text(size = text_y_size),
+      axis.title.x = element_text(size = title_x_size),
+      axis.title.y = element_text(size = title_y_size),
+      legend.title = element_text(size = legend_title_size),
+      legend.text = element_text(size = legend_text_size)
+    ) +
     scale_fill_manual(values = custom_colors)
+    
+    return(temp_plot)
 }
 
 
-create_boxplot <- function(df_p, main_title = "Boxplot of Variables") {
+create_boxplot <- function(df_p, main_title = "Boxplot of Variables",
+                           title_size = 15,
+                           text_x_size = 12,
+                           text_y_size = 12,
+                           title_x_size = 16,
+                           title_y_size = 16,
+                           legend_title_size = 13,
+                           legend_text_size = 11) {
   # Convert data to long format
   
   df_long <- stack(df_p)
@@ -1243,7 +1287,15 @@ create_boxplot <- function(df_p, main_title = "Boxplot of Variables") {
   # Create the boxplot
   temp_plot <- ggplot(df_long, aes(x = ind, y = values)) +
     geom_boxplot(fill = "#2D89C8", color = "black", outlier.shape = NA) +
-    theme(axis.text.x = element_text(angle = 60, vjust = 0.5, hjust = 1)) +
+    theme(
+      plot.title = element_text(size = title_size),
+      axis.text.x = element_text(size = text_x_size,angle = 60, vjust = 0.5, hjust = 0.5),
+      axis.text.y = element_text(size = text_y_size),
+      axis.title.x = element_text(size = title_x_size),
+      axis.title.y = element_text(size = title_y_size),
+      legend.title = element_text(size = legend_title_size),
+      legend.text = element_text(size = legend_text_size)
+    ) +
     labs(x = NULL, y = "Value", title = main_title)
   
   return(temp_plot)
@@ -1255,7 +1307,14 @@ create_pca_plot <- function(data, groups,
                             center_m = F,
                             scale = F,
                             height = 600,
-                            point_size = 3) {
+                            point_size = 3,
+                            title_size = 15,
+                            text_x_size = 12,
+                            text_y_size = 12,
+                            title_x_size = 16,
+                            title_y_size = 16,
+                            legend_title_size = 13,
+                            legend_text_size = 11) {
   # if any column has na values. remove that column
   data <- data[, colSums(is.na(data)) == 0]
   
@@ -1295,6 +1354,15 @@ create_pca_plot <- function(data, groups,
       x = paste0("PC1 (", pc1_var, "% variance)"),
       y = paste0("PC2 (", pc2_var, "% variance)")
     )+
+    theme(
+      plot.title = element_text(size = title_size),
+      axis.text.x = element_text(size = text_x_size),
+      axis.text.y = element_text(size = text_y_size),
+      axis.title.x = element_text(size = title_x_size),
+      axis.title.y = element_text(size = title_y_size),
+      legend.title = element_text(size = legend_title_size),
+      legend.text = element_text(size = legend_text_size)
+    ) +
     guides(fill = "none")   
   
   p
@@ -1348,7 +1416,9 @@ create_pca_plot_3d <- function(data, groups,
 }
 
 
-create_pie_plot <- function(dat,lipid_df_samples) {
+create_pie_plot <- function(dat,
+                            lipid_df_samples,
+                            color_set = 'Set3') {
   dat <- t(dat)
   dat <- as.data.frame(dat)
   # If dat has negative values, show message instead of pie chart
@@ -1384,9 +1454,30 @@ create_pie_plot <- function(dat,lipid_df_samples) {
   summed_by_class <- dat %>%
     group_by(Lipid_Class) %>%
     summarise(Total_Intensity = sum(across(where(is.numeric)), na.rm = TRUE), .groups = "drop")
-  # Generate a palette with enough colors
+  # # Generate a palette with enough colors
+  # n_classes <- length(unique(summed_by_class$Lipid_Class))
+  # custom_colors <- colorRampPalette(brewer.pal(12, "Set3"))(n_classes)
+  
+  # Generate a palette with enough colors for all lipid classes
   n_classes <- length(unique(summed_by_class$Lipid_Class))
-  custom_colors <- colorRampPalette(brewer.pal(12, "Set3"))(n_classes)
+  
+  if (color_set == "viridis") {
+    custom_colors <- viridisLite::viridis(n_classes)
+  } else {
+    valid_palettes <- rownames(RColorBrewer::brewer.pal.info)
+    
+    if (!color_set %in% valid_palettes) {
+      stop(
+        "`color_set` must be an RColorBrewer palette or 'viridis'. ",
+        "Examples: 'Dark2', 'Set2', 'Set3', 'Paired', 'viridis'."
+      )
+    }
+    
+    max_colors <- RColorBrewer::brewer.pal.info[color_set, "maxcolors"]
+    base_colors <- RColorBrewer::brewer.pal(max_colors, color_set)
+    
+    custom_colors <- grDevices::colorRampPalette(base_colors)(n_classes)
+  }
   
   plotly_pie <- plot_ly(
     data = summed_by_class,
@@ -1596,7 +1687,16 @@ plot_lipid_comparison <- function(lipid_class,
                                   double_bond_range = NULL,
                                   total_carbon_range = NULL,
                                   double_bond_range2=NULL,
-                                  total_carbon_range2 = NULL) {
+                                  total_carbon_range2 = NULL,
+                                  point_size =1,
+                                  title_size = 15,
+                                  text_x_size = 12,
+                                  text_y_size = 12,
+                                  title_x_size = 16,
+                                  title_y_size = 16,
+                                  legend_title_size=14,
+                                  legend_text_size=12,
+                                  text_label_size = 4) {
   
   plot_type   <- match.arg(plot_type)
   stats_method <- match.arg(stats_method)
@@ -1702,24 +1802,24 @@ plot_lipid_comparison <- function(lipid_class,
   if (plot_type == "boxplot") {
     p <- p + geom_boxplot(outlier.shape = NA, alpha = 0.7) +
       stat_summary(fun = median, geom = "text",
-                   aes(label = round(after_stat(y), 3)), vjust = -1.2) 
+                   aes(label = round(after_stat(y), 3)), vjust = -1.2, size = text_label_size) 
       if (show_jitter) {
         p <- p + geom_jitter(
           aes(fill = .data[[group_variable]],
               text = paste0("Sample: ", Sample, "<br>Lipid: ", Lipid)),
-          width = 0.2, alpha = 0.2, size = 0.8
+          width = 0.2, alpha = 0.2, size = point_size
         )
       }
   } else if (plot_type == "violin plot") {
     p <- p + geom_violin(trim = FALSE, alpha = 0.7) +
       stat_summary(fun = median, geom = "point", size = 2, color = "black") +
       stat_summary(fun = median, geom = "text",
-                   aes(label = round(after_stat(y), 3)), vjust = -1.2, color = "black")
+                   aes(label = round(after_stat(y), 3)), vjust = -1.2, size = text_label_size)
       if (show_jitter) {
         p <- p + geom_jitter(
           aes(fill = .data[[group_variable]],
               text = paste0("Sample: ", Sample, "<br>Lipid: ", Lipid)),
-          width = 0.2, alpha = 0.2, size = 0.8
+          width = 0.2, alpha = 0.2, size = point_size
         )
       }
   }
@@ -1729,14 +1829,17 @@ plot_lipid_comparison <- function(lipid_class,
     if (stats_method == "student") {
       p <- p + ggpubr::stat_compare_means(method = "t.test",
                                           method.args = list(var.equal = TRUE),
-                                          label = "p.format")
+                                          label = "p.format",
+                                          size = text_label_size)
     } else if (stats_method == "welch") {
       p <- p + ggpubr::stat_compare_means(method = "t.test",
                                           method.args = list(var.equal = FALSE),
-                                          label = "p.format")
+                                          label = "p.format",
+                                          size = text_label_size)
     } else if (stats_method == "wilcox") {
       p <- p + ggpubr::stat_compare_means(method = "wilcox.test",
-                                          label = "p.format")
+                                          label = "p.format",
+                                          size = text_label_size)
     }
   }
   test_method <- ifelse(stats_method == "student", "Student's t-test",
@@ -1748,9 +1851,17 @@ plot_lipid_comparison <- function(lipid_class,
                        test_method,"\n",
                        title_add),
          x = "Group", y = "Expression", fill = "Group") +
-    theme_minimal() +
+    theme_minimal() + 
     theme(
-      plot.title = element_text(size = 10))
+      plot.title = element_text(size = title_size),
+      axis.text.x = element_text(size = text_x_size),  # x-axis tick labels
+      axis.text.y = element_text(size = text_y_size),                          # y-axis tick labels
+      axis.title.x = element_text(size = title_x_size),          # optional: x-axis title
+      axis.title.y = element_text(size = title_y_size),           # optional: y-axis title
+      legend.title = element_text(size = legend_title_size),
+      legend.text = element_text(size = legend_text_size)
+    )
+  
   return(p)
 }
 
@@ -1764,7 +1875,16 @@ plot_indi_lipid_comparison <- function(lipid_name,
                                        plot_type = c("boxplot", "violin plot"),
                                        add_stats = TRUE,
                                        stats_method = c("student", "welch", "wilcox"),
-                                       show_jitter = T) {
+                                       show_jitter = T,
+                                       point_size = 1,
+                                       title_size = 15,
+                                       text_x_size = 12,
+                                       text_y_size = 12,
+                                       title_x_size = 16,
+                                       title_y_size = 16,
+                                       legend_title_size= 14,
+                                       legend_text_size= 12,
+                                       text_label_size = 4) {
   
   plot_type   <- match.arg(plot_type)
   stats_method <- match.arg(stats_method)
@@ -1852,7 +1972,16 @@ plot_indi_lipid_comparison <- function(lipid_name,
     scale_fill_manual(values = group_colors) +
     labs(title = paste("Comparison of", lipid_name, " between groups with", test_method),
          x = "Group", y = "Expression", fill = "Group") +
-    theme_minimal()
+    theme_minimal() + 
+    theme(
+      plot.title = element_text(size = title_size),
+      axis.text.x = element_text(size = text_x_size),  # x-axis tick labels
+      axis.text.y = element_text(size = text_y_size),                          # y-axis tick labels
+      axis.title.x = element_text(size = title_x_size),          # optional: x-axis title
+      axis.title.y = element_text(size = title_y_size),           # optional: y-axis title
+      legend.title = element_text(size = legend_title_size),
+      legend.text = element_text(size = legend_text_size)
+    )
   
   return(p)
 }
@@ -1946,7 +2075,7 @@ create_LCHplot_single <- function(label_text = TRUE,
            x = "Total Carbon Length", y = "Total unsaturation", fill = group_selection) +
       theme_bw()+
       theme(
-        plot.title = element_text(size = title_size, face = "bold", hjust = 0.5), 
+        plot.title = element_text(size = title_size, hjust = 0.5), 
         axis.text.x = element_text(size = text_x_size, angle = 0, vjust = 0.5),  # x-axis tick labels
         axis.text.y = element_text(size = text_y_size),                          # y-axis tick labels
         axis.title.x = element_text(size = title_x_size, face = "bold"),          

@@ -502,14 +502,38 @@ ui <-dashboardPage(
               fluidRow(
                 box(
                   title = "Lipid Class Pie Plot",
-                  width = 6, height = 400, solidHeader = TRUE, status = "primary",
+                  width = 6, height = 480, solidHeader = TRUE, status = "primary",
                   actionButton("help_pie", "Help", icon = icon("question-circle")),
+                  selectInput("Color_scheme_pie", "Color scheme:",
+                              choices = c("Set1 (bright and bold)"            = "Set1",
+                                          "Set2 (soft and balanced)"          = "Set2",
+                                          "Set3 (pastel, more groups)"        = "Set3",
+                                          "Dark2 (high contrast)"             = "Dark2",
+                                          "Paired (paired contrasting colors)" = "Paired",
+                                          "Accent (strong accent colors)"     = "Accent",
+                                          "Pastel1 (light pastel)"             = "Pastel1",
+                                          "Pastel2 (muted pastel)"             = "Pastel2",
+                                          "Viridis (colorblind-friendly)"      = "viridis"
+                              ),
+                              selected = "Set3"),
                   withSpinner(plotlyOutput("pie_plot", height = "300px"))
                 ),
                 box(
                   title = "Lipid Class Boxplot",
-                  width = 6, height = 400, solidHeader = TRUE, status = "primary",
+                  width = 6, height = 480, solidHeader = TRUE, status = "primary",
                   actionButton("help_LCB", "Help", icon = icon("question-circle")),
+                  selectInput("Color_scheme_LCbox", "Color scheme:",
+                              choices = c("Set1 (bright and bold)"            = "Set1",
+                                          "Set2 (soft and balanced)"          = "Set2",
+                                          "Set3 (pastel, more groups)"        = "Set3",
+                                          "Dark2 (high contrast)"             = "Dark2",
+                                           "Paired (paired contrasting colors)" = "Paired",
+                                           "Accent (strong accent colors)"     = "Accent",
+                                           "Pastel1 (light pastel)"             = "Pastel1",
+                                           "Pastel2 (muted pastel)"             = "Pastel2",
+                                           "Viridis (colorblind-friendly)"      = "viridis"
+                                         ),
+                              selected = "Set3"),
                   withSpinner(plotlyOutput("lipid_class_boxplot", height = "300px"))
                 )
               ),
@@ -763,16 +787,28 @@ ui <-dashboardPage(
       # ---- boxplot ----
       tabItem(tabName = "boxplot",
               fluidRow(
-                column(width = 12,
+                column(width = 6,
                        box(title = "Boxplot Settings", status = "primary",
                           selectInput("boxplot_var", "Boxplot for:",
                                       choices = c("boxplot for Samples","boxplot for Lipid Class","boxplot for Lipids" )),
                           conditionalPanel("input.boxplot_var == 'boxplot for Lipids'",
                                            helpText("We don't support boxplot if your expression data has more than 80 lipids.")),
+                          conditionalPanel("input.boxplot_var == 'boxplot for Lipid Class'",
+                                            selectInput("color_boxplotLipidclass", "Select the color code for the lipid class boxplot:",
+                                                        choices = c("Set1 (bright and bold)"            = "Set1",
+                                                                    "Set2 (soft and balanced)"          = "Set2",
+                                                                    "Set3 (pastel, more groups)"        = "Set3",
+                                                                    "Dark2 (high contrast)"             = "Dark2",
+                                                                    "Paired (paired contrasting colors)" = "Paired",
+                                                                    "Accent (strong accent colors)"     = "Accent",
+                                                                    "Pastel1 (light pastel)"             = "Pastel1",
+                                                                    "Pastel2 (muted pastel)"             = "Pastel2",
+                                                                    "Viridis (colorblind-friendly)"      = "viridis"
+                                                        ),selected = "Set3")),
                           actionButton("Box_action", "Plot the Boxplot"),
                            collapsible = TRUE,
                            collapsed = F,
-                           width = 6,
+                           width = 12,
                            style = paste0(
                              "overflow-y: auto;", 
                              "height: ", "200px"
@@ -784,18 +820,51 @@ ui <-dashboardPage(
                                   sliderInput("DPI_BP","Select the dots per inch (DPI) for downloading plot:",
                                               min = 60, max =600,value=100,step=10),
                                   uiOutput("pixel_info_BP"),
-                                  width = 6,collapsed = T
-                       ),
+                                  width = 12,collapsed = T
+                       )
+
+                ),
+                column(width = 6,
+                       scroll_box(title ="Font Settings", status ="primary",
+                                  sliderInput("label_x_size_boxplot","X axis label font size:",
+                                              min = 1, max = 30,
+                                              value = 12,
+                                              step = 0.5),
+                                  
+                                  sliderInput("label_y_size_boxplot","Y axis label font size:",
+                                              min = 1, max = 30,
+                                              value = 12,
+                                              step = 0.5),
+                                  
+                                  sliderInput("title_x_size_boxplot","X axis title font size:",
+                                              min = 2, max = 30,
+                                              value = 12,
+                                              step = 0.5),
+                                  
+                                  sliderInput("title_y_size_boxplot","Y axis title font size:",
+                                              min = 2, max = 30,
+                                              value = 12,
+                                              step = 0.5),
+                                  sliderInput("label_title_size_boxplot","Title font size:",
+                                              min = 2, max = 30,
+                                              value = 16,
+                                              step = 0.5),
+                           
+
+                                  
+                                  width = 12,collapsed = T)
+                ),
+                column(width=12,
                        scroll_box(title = "Boxplot Output", status = "info", 
                                   downloadButton("download_boxplot", "Download Boxplot"),
                                   uiOutput("boxPlotUI"),
-                                  width = 12)
-                ))
+                                  width = 12))
+                )
       ),
       # ---- plot_comparison ----
       tabItem(tabName = "plot_comparison",
               fluidRow(
-                column(width = 12,
+                column(width = 6,
                        scroll_box(title = "Plot Settings", status = "primary",
                                   selectInput("plot_lipid_class", "Select lipid class for comparison:",choice = NULL),
                                   # enable double bond filter
@@ -851,7 +920,14 @@ ui <-dashboardPage(
                                                 "Wilcoxon Test" = "wilcox"
                                               )),
                                   checkboxInput("show_points", "Show individual data points", value = TRUE),
-                                  actionButton("comparison_action", "Generate Plot")),
+                                  conditionalPanel(
+                                    condition ="input.show_points == true",
+                                    sliderInput("point_size_class_comp","Point size:",
+                                                min=0.5,max=5,value=1,step =0.1)
+                                  ),
+                                  actionButton("comparison_action", "Generate Plot"),
+                                  width=12),
+                       
                        scroll_box(title="Pixel size settings for downloading plots", status = "primary",
                                   numericInput("width_CP", "Width (in inches):", value = 10, step = 0.5),
                                   numericInput("height_CP", "Height (in inches):", value = 6, step = 0.5),
@@ -859,7 +935,51 @@ ui <-dashboardPage(
                                               min = 60, max =600,value=100,step=10),
                                   uiOutput("pixel_info_CP"),
                                   width = 12,collapsed = T
-                       ),
+                       )
+
+                ),
+                column(width = 6,
+                       scroll_box(title ="Font and Color Settings", status ="primary",
+                                  sliderInput("label_x_size_class_comp","X axis label font size:",
+                                              min = 1, max = 30,
+                                              value = 12,
+                                              step = 0.5),
+                                  
+                                  sliderInput("label_y_size_class_comp","Y axis label font size:",
+                                              min = 1, max = 30,
+                                              value = 12,
+                                              step = 0.5),
+                                  
+                                  sliderInput("title_x_size_class_comp","X axis title font size:",
+                                              min = 2, max = 30,
+                                              value = 12,
+                                              step = 0.5),
+                                  
+                                  sliderInput("title_y_size_class_comp","Y axis title font size:",
+                                              min = 2, max = 30,
+                                              value = 12,
+                                              step = 0.5),
+                                  sliderInput("label_title_size_class_comp","Title font size:",
+                                              min = 2, max = 30,
+                                              value = 16,
+                                              step = 0.5),
+                                  sliderInput("legend_title_size_class_comp","Legend title font size:",
+                                              min = 2, max = 20,
+                                              value = 12,
+                                              step = 0.5),
+                                  
+                                  sliderInput("legend_text_size_class_comp","Legend text font size:",
+                                              min = 1, max = 15,
+                                              value = 10,
+                                              step = 0.5),
+                                  
+                                  sliderInput("text_label_size_class_comp","Text label size:",
+                                              min = 1, max = 10,
+                                              value = 4,
+                                              step = 0.5),
+                                  width = 12,collapsed = T)
+                ),
+                column(width=12,                       
                        scroll_box(title = "Plot Output", status = "info", 
                                   downloadButton(
                                     "Lipid_class_download_plot_single",
@@ -867,15 +987,14 @@ ui <-dashboardPage(
                                   ),
                                   downloadButton("Lipid_class_download_plot", "Download Plots for All Lipid Class"),
                                   uiOutput("Lipid_class_plotUI"),
-                                  width = 12)
-                ))
+                                  width = 12)))
       ),
-      ##---- individual comparison ----
+      #---- individual comparison ----
       tabItem(
         tabName = "indi_comparison",
         fluidRow(
           column(
-            width = 12,
+            width = 6,
             scroll_box(
               title = "Plot Settings", status = "primary",
               selectInput("selected_lipid", "Select a lipid:", choices = NULL),
@@ -892,7 +1011,13 @@ ui <-dashboardPage(
                 )
               ),
               checkboxInput("show_points2", "Show individual data points", value = TRUE),
-              actionButton("single_lipid_plot_btn", "Generate Plot")
+              conditionalPanel(
+                condition ="input.show_points2 == true",
+                sliderInput("point_size_indi_comp","Point size:",
+                            min=0.5,max=5,value=1,step =0.1)
+              ),
+              actionButton("single_lipid_plot_btn", "Generate Plot"),
+              width =12
             ),
             scroll_box(title="Pixel size settings for downloading plots", status = "primary",
                        numericInput("width_IP", "Width (in inches):", value = 10, step = 0.5),
@@ -901,7 +1026,53 @@ ui <-dashboardPage(
                                    min = 60, max =600,value=100,step=10),
                        uiOutput("pixel_info_IP"),
                        width = 12,collapsed = T
-            ),
+            )),
+          
+          column(
+            width = 6,
+            
+            scroll_box(title ="Font and Color Settings", status ="primary",
+                       sliderInput("label_x_size_indi_comp","X axis label font size:",
+                                   min = 1, max = 30,
+                                   value = 12,
+                                   step = 0.5),
+                       
+                       sliderInput("label_y_size_indi_comp","Y axis label font size:",
+                                   min = 1, max = 30,
+                                   value = 12,
+                                   step = 0.5),
+                       
+                       sliderInput("title_x_size_indi_comp","X axis title font size:",
+                                   min = 2, max = 30,
+                                   value = 12,
+                                   step = 0.5),
+                       
+                       sliderInput("title_y_size_indi_comp","Y axis title font size:",
+                                   min = 2, max = 30,
+                                   value = 12,
+                                   step = 0.5),
+                       sliderInput("label_title_size_indi_comp","Title font size:",
+                                   min = 2, max = 30,
+                                   value = 16,
+                                   step = 0.5),
+                       sliderInput("legend_title_size_indi_comp","Legend title font size:",
+                                   min = 2, max = 20,
+                                   value = 12,
+                                   step = 0.5),
+                       
+                       sliderInput("legend_text_size_indi_comp","Legend text font size:",
+                                   min = 1, max = 15,
+                                   value = 10,
+                                   step = 0.5),
+                       
+                       sliderInput("text_label_size_indi_comp","Text label size:",
+                                   min = 1, max = 10,
+                                   value = 4,
+                                   step = 0.5),
+                       width = 12,collapsed = T)),
+          
+          column(
+            width =12,
             scroll_box(
               title = "Plot Output", status = "info",
               downloadButton(
@@ -1022,7 +1193,7 @@ ui <-dashboardPage(
       # ---- volcano plot ----
       tabItem(tabName = "volcano_plot",
               fluidRow(
-                column(width = 12,
+                column(width = 6,
                        scroll_box(title = "Volcano Plot Settings", status = "primary",
                                   p("Volcano plots are a type of scatter plot that are used to visualize the results of differential expression analyses. 
                                     They plot the negative logarithm of the p-value on the y-axis against the log fold change on the x-axis, 
@@ -1045,9 +1216,9 @@ ui <-dashboardPage(
                                   sliderInput("DPI_volcano","Select the dots per inch (DPI) for downloading plot:",
                                               min = 60, max =600,value=80,step=10),
                                   uiOutput("pixel_info_volcano"),
-                                  width = 6,collapsed = T
-                       ),
-  
+                                  width = 12,collapsed = T
+                       )),
+                column(width = 6,
                       scroll_box(title ="Font and Color Settings", status ="primary",
                                  
                                 sliderInput("point_size_volcano","Point size:",
@@ -1081,7 +1252,8 @@ ui <-dashboardPage(
                                             min = 2, max = 30,
                                             value = 16,
                                             step = 0.5),
-                                 width = 6,collapsed = T),
+                                 width = 12,collapsed = T)),
+                column(width=12,
                        scroll_box(title = "Volcano Plot Output", status = "info",
                                   downloadButton("download_volcano_plot", "Download Volcano Plot (.png)"),
                                   uiOutput("volcano_plotUI"),
@@ -1095,7 +1267,7 @@ ui <-dashboardPage(
       # ---- PCA ----
       tabItem(tabName ="pca",
               fluidRow(
-                column(width = 12,
+                column(width = 6,
                        scroll_box(title = "PCA Plot Settings", status = "primary",
                                   # checkboxInput('scale_data', 'Scale Data', value = TRUE),
                                   checkboxInput("pca_3d", "3D PCA Plot", value = F),
@@ -1108,12 +1280,55 @@ ui <-dashboardPage(
                                               min = 60, max =600,value=100,step=10),
                                   uiOutput("pixel_info_PCA"),
                                   width = 12,collapsed = T
+                       )),
+                column(width = 6,
+                       scroll_box(title ="Font and Color Settings", status ="primary",
+                                  
+                                  sliderInput("point_size_pca","Point size:",
+                                              min = 1, max = 10,
+                                              value = 3,
+                                              step = 0.5),
+                                  sliderInput("label_x_size_pca","X axis label font size:",
+                                              min = 1, max = 30,
+                                              value = 12,
+                                              step = 0.5),
+                                  
+                                  sliderInput("label_y_size_pca","Y axis label font size:",
+                                              min = 1, max = 30,
+                                              value = 12,
+                                              step = 0.5),
+                                  
+                                  sliderInput("title_x_size_pca","X axis title font size:",
+                                              min = 2, max = 30,
+                                              value = 12,
+                                              step = 0.5),
+                                  
+                                  sliderInput("title_y_size_pca","Y axis title font size:",
+                                              min = 2, max = 30,
+                                              value = 12,
+                                              step = 0.5),
+                                  sliderInput("label_title_size_pca","Title font size:",
+                                              min = 2, max = 30,
+                                              value = 16,
+                                              step = 0.5),
+                                  sliderInput("legend_title_size_pca","Legend title font size:",
+                                              min = 2, max = 20,
+                                              value = 12,
+                                              step = 0.5),
+                                  
+                                  sliderInput("legend_text_size_pca","Legend text font size:",
+                                              min = 1, max = 15,
+                                              value = 10,
+                                              step = 0.5),
+                                  width = 12,collapsed = T)
                        ),
+                column(width=12,
+
                        scroll_box(title = "PCA Plot Output", status = "info",
                                   downloadButton("download_pca_plot", "Download PCA plot"),
                                   uiOutput("PCAPlotUI"),
-                                  width = 12)
-                ))
+                                  width = 12))
+                )
       ),
       # ---- heatmap hirechical ----
       tabItem(tabName = 'heatmaphcl',

@@ -1450,7 +1450,15 @@ server <- function(input, output,session) {
     # the pseudo count is to avoid log2(0) = -Inf, which will cause the boxplot to be not displayed
     df <-log2(processedData() + min(processedData()[processedData() > 0], na.rm = TRUE)/100)
     p <- boxplot_lipid_class(df,parsed_table(),
-                             Title = "Boxplot of Lipid Class Averages Across Samples(Log2-Transformed)")
+                             color_set = input$Color_scheme_LCbox,
+                             Title = "Boxplot of Lipid Class Averages Across Samples(Log2-Transformed)",
+                             text_x_size = 10,
+                             text_y_size = 10,
+                             title_x_size = 12,
+                             title_y_size = 12,
+                             title_size =15,
+                             legend_title_size = 10,
+                             legend_text_size = 9)
     ggplotly(p)  
     })
   
@@ -1482,20 +1490,25 @@ server <- function(input, output,session) {
     else{
     df_p <- as.data.frame(t(df_p))
     df_log <- log2(df_p + min(df_p[df_p > 0], na.rm = TRUE)/100)
-    temp_plot <- create_boxplot(df_log,"Boxplot for samples(Log2-Transformed)")
+    temp_plot <- create_boxplot(df_log,"Boxplot for samples(Log2-Transformed)",
+                                title_x_size = 10,
+                                text_x_size = 10)
     ggplotly(temp_plot)
     }
     
   })
+  
   output$pca_plot_preview <- renderPlotly({
     df_p <- processedData()
     group <- metadataWithGroup()[[input$define_group]]
-    temp_plot <- create_pca_plot(df_p,group,center_m = T, scale = T)
+    temp_plot <- create_pca_plot(df_p,group,center_m = T, scale = T,
+                                 title_x_size = 10,
+                                 title_y_size = 10)
     ggplotly(temp_plot,tooltip = c("text", "x", "y"))
   })
   
   output$pie_plot <- renderPlotly({
-    p <- create_pie_plot(processedData(),parsed_table())
+    p <- create_pie_plot(processedData(),parsed_table(),color_set = input$Color_scheme_pie)
     p
   })
   
@@ -2119,15 +2132,34 @@ server <- function(input, output,session) {
       boxplot_lipids(p)
     } else {
       df_p <- as.data.frame(df)
-      boxplot_lipids(create_boxplot(df_p, "Boxplot of Lipids"))
+      boxplot_lipids(create_boxplot(df_p, main_title ="Boxplot of Lipids",
+                                    title_size = input$label_title_size_boxplot,
+                                    text_x_size = input$label_x_size_boxplot,
+                                    text_y_size = input$label_y_size_boxplot,
+                                    title_x_size = input$title_x_size_boxplot,
+                                    title_y_size = input$title_y_size_boxplot,
+                                    legend_title_size = 13,
+                                    legend_text_size = 11))
     }
     
     # Samples
     df_p <- as.data.frame(t(df))
-    boxplot_samples(create_boxplot(df_p, "Boxplot of Samples"))
+    boxplot_samples(create_boxplot(df_p, main_title ="Boxplot of Samples",
+                                   title_size = input$label_title_size_boxplot,
+                                   text_x_size = input$label_x_size_boxplot,
+                                   text_y_size = input$label_y_size_boxplot,
+                                   title_x_size = input$title_x_size_boxplot,
+                                   title_y_size = input$title_y_size_boxplot,
+                                   legend_title_size = 13,
+                                   legend_text_size = 11))
     
     # Lipid class
-    boxplot_lipidclass(boxplot_lipid_class(df, lipid_meta))
+    boxplot_lipidclass(boxplot_lipid_class(df, lipid_meta,color_set = input$color_boxplotLipidclass,
+                                           title_size = input$label_title_size_boxplot,
+                                           text_x_size = input$label_x_size_boxplot,
+                                           text_y_size = input$label_y_size_boxplot,
+                                           title_x_size = input$title_x_size_boxplot,
+                                           title_y_size = input$title_y_size_boxplot))
   })
   
   box_plot_obj <- reactive({
@@ -2223,7 +2255,15 @@ server <- function(input, output,session) {
     else{
       temp_plot <- create_pca_plot(df_p,group,
                                    width=input$width_PCA * input$DPI_PCA,
-                                   height = input$height_PCA * input$DPI_PCA)
+                                   height = input$height_PCA * input$DPI_PCA,
+                                   point_size = input$point_size_pca,
+                                   title_size = input$label_title_size_pca,
+                                   text_x_size = input$label_x_size_pca,
+                                   text_y_size = input$label_y_size_pca,
+                                   title_x_size = input$title_x_size_pca,
+                                   title_y_size = input$title_y_size_pca,
+                                   legend_title_size = input$legend_title_size_pca,
+                                   legend_text_size = input$legend_text_size_pca)
       ggplotly(temp_plot,tooltip = c("text", "x", "y"))
     }
     
@@ -2422,7 +2462,16 @@ server <- function(input, output,session) {
       double_bond_range  = if (isTRUE(input$enable_db_filter))  input$tt_unsat else NULL,
       total_carbon_range = if (isTRUE(input$enable_c_filter))   input$total_c_range else NULL,
       double_bond_range2  = if (isTRUE(input$enable_db_filter2)) input$tt_unsat2 else NULL,
-      total_carbon_range2 = if (isTRUE(input$enable_c_filter2))  input$total_c_range2 else NULL
+      total_carbon_range2 = if (isTRUE(input$enable_c_filter2))  input$total_c_range2 else NULL,
+      point_size = input$point_size_class_comp,
+      title_size = input$label_title_size_class_comp,
+      text_x_size = input$label_x_size_class_comp,
+      text_y_size = input$label_y_size_class_comp,
+      title_x_size = input$title_x_size_class_comp,
+      title_y_size = input$title_y_size_class_comp,
+      legend_title_size = input$legend_title_size_class_comp,
+      legend_text_size = input$legend_text_size_class_comp,
+      text_label_size = input$text_label_size_class_comp
     )
   }, ignoreInit = TRUE)
   
@@ -2552,7 +2601,16 @@ server <- function(input, output,session) {
                                     group_variable = input$define_group,
                                     plot_type=input$plot_type_var2,
                                     stats_method = input$stats_m2,
-                                    show_jitter = input$show_points2
+                                    show_jitter = input$show_points2,
+                                    point_size = input$point_size_indi_comp,
+                                    title_size = input$label_title_size_indi_comp,
+                                    text_x_size = input$label_x_size_indi_comp,
+                                    text_y_size = input$label_y_size_indi_comp,
+                                    title_x_size = input$title_x_size_indi_comp,
+                                    title_y_size = input$title_y_size_indi_comp,
+                                    legend_title_size = input$legend_title_size_indi_comp,
+                                    legend_text_size = input$legend_text_size_indi_comp,
+                                    text_label_size = input$text_label_size_indi_comp
     )
     return(p)
   })
