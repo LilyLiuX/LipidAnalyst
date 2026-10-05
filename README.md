@@ -1,6 +1,8 @@
 # 🧬LipidAnalyst
 
-**LipidAnalyst** is a Shiny-based, end-to-end lipidomics analysis platform designed for researchers without programming expertise. It enables streamlined data preprocessing, statistical analysis, visualization, and network modeling within an interactive interface.
+**LipidAnalyst** is a Shiny-based, end-to-end lipidomics analysis platform designed for researchers without programming expertise. It enables streamlined data processing, statistical analysis, visualization, and network modeling within an interactive interface.
+
+[![Launch LipidAnalyst](https://img.shields.io/badge/Launch-LipidAnalyst-blue?style=for-the-badge)](https://lipidanalyst.miserver.it.umich.edu)
 
 ## 🔬 Features
 
