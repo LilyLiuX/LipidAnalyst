@@ -703,7 +703,29 @@ parse_name <- function(names, IS=F){
   result$Clean.Name[idx][has_sn3] <- paste0(result$Clean.Name[idx][has_sn3], "/",
                                             result$Chain3[idx][has_sn3], ":",
                                             result$Chain3.unsaturation[idx][has_sn3])
-  
+  # saturated/unsaturated based on Total.unsaturation
+  result$Saturation <- ifelse(result$Total.unsaturation == 0 & result$Total.carbon > 0, "Saturated", "Unsaturated")
+  # combine lipid class and saturation
+  result$Subclass <- paste(result$Saturation,result$Lipid.class, sep = " ")
+  result$Broad.class <- ifelse(result$Lipid.class %in% c("PC", "PE", "PS", "PI", "PG", "PA", "CL",
+                                                         "LPC", "LPE", "LPS", "LPI", "LPG", "LPA",
+                                                         "PE O-", "PE P-", "PC O-", "PC P-"), 
+                               "Glycerophospholipids",
+                               ifelse(result$Lipid.class %in% c("TG", "DG", "MG"), 
+                                      "Glycerolipids",
+                                      ifelse(result$Lipid.class %in% c("Cer", "HexCer", "dhCer","SM","LacCer"), 
+                                             "Sphingolipids",
+                                             ifelse(result$Lipid.class %in% c("FA","CoA","FAHFA"), 
+                                                    "Fatty Acyls",
+                                                    ifelse(result$Lipid.class %in% c("AC","LCarnitine"), 
+                                                           "Carnitines",
+                                                           ifelse(result$Lipid.class %in% c("Cholesterol"，"CE"), 
+                                                                  "Sterols",
+                                                                  NA))))))
+  # put saturation column after lipid.class
+  result <- result[, c("Name", "Clean.Name", "Lipid.class", "Saturation", "Subclass", "Broad.class",
+                       "Chain1", "Chain1.unsaturation", "Chain2", "Chain2.unsaturation",
+                       "Chain3", "Chain3.unsaturation", "Total.carbon", "Total.unsaturation")]
   return(result)
 }
 
