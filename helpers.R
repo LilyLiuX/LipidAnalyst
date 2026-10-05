@@ -719,7 +719,7 @@ parse_name <- function(names, IS=F){
                                                     "Fatty Acyls",
                                                     ifelse(result$Lipid.class %in% c("AC","LCarnitine"), 
                                                            "Carnitines",
-                                                           ifelse(result$Lipid.class %in% c("Cholesterol"，"CE"), 
+                                                           ifelse(result$Lipid.class %in% c("Cholesterol","CE"), 
                                                                   "Sterols",
                                                                   NA))))))
   # put saturation column after lipid.class
