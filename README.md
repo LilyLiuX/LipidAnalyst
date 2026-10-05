@@ -89,6 +89,13 @@ To restore the R environment manually:
 renv::restore()
 ```
 
+## 📖 Citation
+
+If you use **LipidAnalyst** in your research, please cite our paper:
+
+> Liu, X., et al. **LipidAnalyst: A Comprehensive Tool for Lipidomic Data Visualization and Analysis.** *Metabolites* (2026).\
+> <https://doi.org/10.3390/metabo16080526>
+
 ## 📊 Example Data
 
 LipidAnalyst includes embedded example data within the application for demonstration purposes.\

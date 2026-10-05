@@ -102,12 +102,18 @@ ui <-dashboardPage(
                                          )),
                                          br(),
                                          p(
-                                           "For detailed instructions and help, please refer to the ",
-                                           a("tutorial document", href = "Tutorial.html", target = "_blank"),
-                                           ".",
+                                           "For detailed instructions and help, please refer to our tutorial.",
                                            style = "font-size:14px;"
                                          ),
-                                        
+                                         
+                                         a(
+                                           tags$i(class = "fa fa-book"),
+                                           " Tutorial",
+                                           href = "Tutorial.html",
+                                           target = "_blank",
+                                           class = "btn btn-primary",
+                                           style = "margin-top:5px; margin-bottom:10px;"
+                                         ),
                                          
                                          # footnote area
                                          tags$hr(),
@@ -117,7 +123,75 @@ ui <-dashboardPage(
                                             "For support or inquiries, please contact: lipidanalyst-requests@umich.edu"
                                            
                                          ),
-                                         width = 12)
+                                         width = 6),
+                              scroll_box(
+                                title = tags$strong("What's New"),
+                                status = "primary",
+                                width = 6,
+                                
+                                # Latest update
+                                tags$h4(
+                                  "July 2026",
+                                  style = "font-weight:bold; margin-bottom:5px;"
+                                ),
+                                
+                                tags$h4(
+                                  "LipidAnalyst is now published!",
+                                  style = "font-weight:bold;"
+                                ),
+                                
+                                p(
+                                  "Our LipidAnalyst paper has been published in ",
+                                  tags$em("Metabolites"),
+                                  "."
+                                ),
+                                
+                                a(
+                                  "Read the paper",
+                                  href = "https://doi.org/10.3390/metabo16080526",
+                                  target = "_blank",
+                                  class = "btn btn-primary"
+                                ),
+                                br(),
+                                br(),
+                                
+                                p(
+                                  "If you use LipidAnalyst in your research, please cite our paper:",
+                                  style = "font-size:15px;"
+                                ),
+                                
+                                br(),
+                                
+                                tags$div(
+                                  style = "
+                              background-color:#f7f7f7;
+                              border-left:4px solid #337ab7;
+                              padding:15px 20px;
+                              margin-bottom:20px;
+                            ",
+                                  
+                                  p(
+                                    
+                                   "Liu, X., et al. LipidAnalyst: A Comprehensive Tool for Lipidomic Data Visualization and Analysis. ",
+                                    tags$em("Metabolites"),
+                                    " (2026)."
+                                  )
+                                ),
+                                
+                                
+                                tags$hr(),
+                                
+                                tags$h4(
+                                  "Recent Updates",
+                                  style = "font-weight:bold;"
+                                ),
+                                
+                                tags$ul(
+                                  style = "font-size:14px; line-height:1.8;",
+                                  tags$li("Expanded lipid annotation."),
+                                  tags$li("Improved LipidAnalyst documentation and tutorial.")
+                                )
+                              )
               )),
               uiOutput("nav_ui0")
       ),
