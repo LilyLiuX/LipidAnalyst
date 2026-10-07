@@ -1,14 +1,49 @@
 server <- function(input, output,session) {
+  # output$nav_ui0 <- renderUI({
+  #   
+  #   nav_buttons(style = "
+  #   position: sticky;
+  #   bottom: 0;
+  #   width: 100%;
+  #   background-color:rgba(255,255,255,0);
+  #   padding: 10px 30px;
+  #   display: flex;
+  #   justify-content: flex-end;
+  #   gap: 20px;
+  #   z-index: 1000;
+  # ",
+  #  next_id = "next0",next_label = "Get Started!")
+  # })
+  
   output$nav_ui0 <- renderUI({
-    
-    nav_buttons(next_id = "next0")
+    div(
+      style = "
+      width: 50%;
+      padding: 10px 30px;
+      display: flex;
+      justify-content: flex-end;
+    ",
+      actionButton(
+        "next0",
+        "Get Started!",
+        icon = icon("arrow-right"),
+        style = "
+        font-size: 24px;
+        padding: 15px 30px;
+        background-color: #3c8dbc;
+        border-color: #3c8dbc;
+        color: white;
+        border-radius: 6px;
+      "
+      )
+    )
   })
   ## ---- Lipidomics Data Upload & Preview ----
   # load example
   
   originalData <- reactiveVal(NULL)
   
-  # Reactive for llipidomics data
+  # Reactive for lipidomics data
   observe({
     req(input$lipidomics_file,input$lipidROW)
     ext <- tools::file_ext(input$lipidomics_file$name)
@@ -115,6 +150,30 @@ server <- function(input, output,session) {
     originalData(df)  
   })
   
+  observeEvent(input$load_example_l2, {
+    example_path <- "www/example_data2.csv"
+    df <- read.csv(example_path,
+                   header = T,
+                   check.names = FALSE,
+                   stringsAsFactors = FALSE)
+    rownames(df) <- df[[1]]  # set first column as rownames
+    df <- df[ , -1,drop =F]           # remove first column
+    # if the df has NaN, NA, " ", or ""
+    # treating them as missing value
+    df[is.na(df) | df == " " | df == ""|df == "NaN"|df == "N/A"] <- NA
+    
+    # Try to convert each column to numeric, if possible
+    df[] <- lapply(df, function(col) {
+      # Remove leading/trailing spaces
+      col <- trimws(col)
+      # Convert to numeric if possible, else keep as is
+      suppressWarnings(as.numeric(col))
+    })
+    df <- df[, order(colnames(df)), drop = FALSE]
+    showNotification("Example Lipidomics data loaded.", type = "message")
+    originalData(df)  
+  })
+  
   observeEvent(input$help_btn_upload1, {
     showModal(modalDialog(
       title = "Help Information",
@@ -187,11 +246,21 @@ server <- function(input, output,session) {
   
   output$download_example_l <- downloadHandler(
     filename = function() {
-      "Lipidomics_Data.xlsx"   # the name the user will see
+      "Example data 1.xlsx"   # the name the user will see
     },
     content = function(file) {
       # copy from your www/ folder to the download target
       file.copy("www/Lipidomics_Data.xlsx", file)
+    }
+  )
+  
+  output$download_example_l2 <- downloadHandler(
+    filename = function() {
+      "Example data 2.csv"   # the name the user will see
+    },
+    content = function(file) {
+      # copy from your www/ folder to the download target
+      file.copy("www/example_data2.csv", file)
     }
   )
   
@@ -233,6 +302,18 @@ server <- function(input, output,session) {
     example_path <- "www/Metadata_Group_Info.xlsx"
     df <- readxl::read_excel(example_path, sheet = 1)
     df <- as.data.frame(df)
+    rownames(df) <- df[[1]]  # set first column as rownames
+    df <- df[ , -1,drop =F]           # remove first column
+    showNotification("Example Metadata data loaded.", type = "message")
+    metadataFile(df)  
+  })
+  
+  observeEvent(input$load_example_m2, {
+    example_path <- "www/example_group2.csv"
+    df <- read.csv(example_path,
+                   header = T,
+                   check.names = FALSE,
+                   stringsAsFactors = FALSE)
     rownames(df) <- df[[1]]  # set first column as rownames
     df <- df[ , -1,drop =F]           # remove first column
     showNotification("Example Metadata data loaded.", type = "message")
@@ -339,11 +420,21 @@ server <- function(input, output,session) {
   
   output$download_example_m <- downloadHandler(
     filename = function() {
-      "Metadata_Group_Info.xlsx"   # the name the user will see
+      "Example Metadata1.xlsx"   # the name the user will see
     },
     content = function(file) {
       # copy from your www/ folder to the download target
       file.copy("www/Metadata_Group_Info.xlsx", file)
+    }
+  )
+  
+  output$download_example_m2 <- downloadHandler(
+    filename = function() {
+      "Example Metadata2.csv"   # the name the user will see
+    },
+    content = function(file) {
+      # copy from your www/ folder to the download target
+      file.copy("www/example_group2.csv", file)
     }
   )
   

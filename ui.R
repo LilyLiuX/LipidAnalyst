@@ -86,21 +86,21 @@ ui <-dashboardPage(
                               scroll_box(title =tags$strong("Welcome to LipidAnalyst!"), status = "primary",
                                          p("LipidAnalyst: A Comprehensive Tool for Lipidomics Data Analysis",
                                            style = "font-size:16px;font-weight:bold;"),
-                                         img(src = "LipidAnalyst.png", height = "10%", width = "10%"),
+                                         # img(src = "LipidAnalyst.png", height = "10%", width = "10%"),
                                          p("LipidAnalyst is an interactive web application designed for the analysis of lipidomics data. 
                                            It provides a user-friendly interface for uploading, processing, normalizing, and analyzing lipidomics datasets.",
                                            style = "font-size:14px;"),
-                                         p("Key Features:",
-                                         tags$ul(style = "font-size:14px; line-height:1.6;",
-                                           tags$li("Data Upload: Easily upload lipidomics data, metadata and internal standards in CSV/TSV/XLS/XLSX format."),
-                                           tags$li("Data Filtering: Apply filters to remove low-quality, low-abundance, and low-variance features."),
-                                           tags$li("Missing Value Imputation: Choose from various imputation methods to handle missing data."),
-                                           tags$li("Lipid Parsing: Automatically parse lipid names into structured components."),
-                                           tags$li("Normalization: Normalize data using internal standards or other user-defined methods."),
-                                           tags$li("Statistical Analysis: Perform T-tests, ANOVA, and correlation analyses with visualization options."),
-                                           tags$li("Interactive Visualizations: Explore your data with Differential Mean Lipid Heatmaps, PCA plots, boxplots, DSPC networks, and more.")
-                                         )),
-                                         br(),
+                                         img(src = "Workflow_AK_revised_Lily.png", height = "90%", width = "90%"),
+                                         # p(tags$strong("Key Features:"),
+                                         # tags$ul(style = "font-size:14px; line-height:1.6;",
+                                         #   tags$li(p(tags$strong("Data Upload"),": Easily upload lipidomics data, metadata and internal standards in CSV/TSV/XLS/XLSX format.")),
+                                         #   tags$li(p(tags$strong("Data Filtering"),": Apply filters to remove low-quality, low-abundance, and low-variance features.")),
+                                         #   tags$li(p(tags$strong("Missing Value Imputation"),": Choose from various imputation methods to handle missing data.")),
+                                         #   tags$li(p(tags$strong("Lipid Parsing"),": Automatically parse lipid names into structured components.")),
+                                         #   tags$li(p(tags$strong("Normalization"),": Normalize data using internal standards or other user-defined methods.")),
+                                         #   tags$li(p(tags$strong("Statistical Analysis"),": Perform T-tests, ANOVA, and correlation analyses with visualization options.")),
+                                         #   tags$li(p(tags$strong("Interactive Visualizations"),": Explore your data with Differential Mean Lipid Heatmaps, PCA plots, boxplots, DSPC networks, and more."))
+                                         # )),
                                          p(
                                            "For detailed instructions and help, please refer to our tutorial.",
                                            style = "font-size:14px;"
@@ -112,7 +112,7 @@ ui <-dashboardPage(
                                            href = "Tutorial.html",
                                            target = "_blank",
                                            class = "btn btn-primary",
-                                           style = "margin-top:5px; margin-bottom:10px;"
+                                           style = "margin-top:2px; margin-bottom:2px;"
                                          ),
                                          
                                          # footnote area
@@ -173,7 +173,7 @@ ui <-dashboardPage(
                                   p(
                                     
                                    "Liu, X., et al. LipidAnalyst: A Comprehensive Tool for Lipidomic Data Visualization and Analysis. ",
-                                    tags$em("Metabolites"),
+                                    tags$em("Metabolites."),
                                     " (2026)."
                                   )
                                 ),
@@ -191,9 +191,9 @@ ui <-dashboardPage(
                                   tags$li("Expanded lipid annotation."),
                                   tags$li("Improved LipidAnalyst documentation and tutorial.")
                                 )
-                              )
+                              ),
+                              uiOutput("nav_ui0")
               )),
-              uiOutput("nav_ui0")
       ),
       
       # ---- upload lipid data ----
@@ -207,8 +207,34 @@ ui <-dashboardPage(
                                                      choices = c("lipids on the columns", "lipids on the rows"),
                                                      selected = "lipids on the columns"),
                                          fileInput("lipidomics_file", "Lipidomics Data File (CSV/TSV/XLS/XLSX)"),
-                                         actionButton("load_example_l", "Load Example Lipidomics Data", icon = icon("file")),
-                                         downloadButton("download_example_l", "Download Example Data"),
+                                         actionButton("load_example_l", "Load Example Lipidomics Data 1", icon = icon("file")),
+                                         downloadButton("download_example_l", "Download Example Data 1"),
+                                         p("Example data 1: Targeted lipidomics of plasma from sham and CKD mice following 16 weeks of high-fat diet (HFD)."),
+                                         p(
+                                           
+                                           "Saum, K., et al. Chronic kidney disease induces distinct alterations of macrophage lipid metabolism in a mouse model of atherosclerosis.",
+                                           tags$em("Journal of Lipid Research."),
+                                           " (2026).",
+                                         tags$a(
+                                           "View publication",
+                                           href = "https://doi.org/10.1016/j.jlr.2026.100975",
+                                           target = "_blank"
+                                         ),
+                                         style = "font-size:12px; color:#666;"),
+                                         actionButton("load_example_l2", "Load Example Lipidomics Data 2", icon = icon("file")),
+                                         downloadButton("download_example_l2", "Download Example Data 2"),
+                                         p("Example data 2: MS-based shotgun lipidomics analysis of human plasma samples from HFrEF-patients (n = 13) and non-HFrEF controls (n = 10)."),
+                                         p(
+                                           
+                                           "Salatzki, J., et al. Adipose tissue ATGL modifies the cardiac lipidome in pressure-overload-induced left ventricular failure.",
+                                           tags$em("PLoS Genet."),
+                                           " (2018).",
+                                           tags$a(
+                                             "View publication",
+                                             href = "https://doi.org/10.1371/journal.pgen.1007171",
+                                             target = "_blank"
+                                           ),
+                                           style = "font-size:12px; color:#666;"),
                                          uiOutput("validation"),
                                          actionButton("help_btn_upload1", "Help", icon = icon("question-circle"))
                               )
@@ -227,8 +253,11 @@ ui <-dashboardPage(
               fluidRow(column(width = 12,
                               scroll_box(title = "Upload Metadata (Group information)", status = "primary",
                                          fileInput("metadata_file", "Metadata File  (CSV/TSV/XLS/XLSX)"),
-                                         actionButton("load_example_m", "Load Example Metadata", icon = icon("file")),
-                                         downloadButton("download_example_m", "Download Example Data"),
+                                         actionButton("load_example_m", "Load Example Metadata 1", icon = icon("file")),
+                                         downloadButton("download_example_m", "Download Example Data 1"),
+                                         tags$br(),tags$br(),
+                                         actionButton("load_example_m2", "Load Example Metadata 2", icon = icon("file")),
+                                         downloadButton("download_example_m2", "Download Example Data 2"),
                                          selectInput("define_group", "Select Grouping Variable:",
                                                      choices = NULL),  # update dynamically
                                          uiOutput("metadata_validation"),
@@ -259,8 +288,9 @@ ui <-dashboardPage(
                                                        choices = c("lipids on the columns", "lipids on the rows"),
                                                        selected = "lipids on the columns"),
                                            fileInput("internal_standard_file", "Internal Standard File  (CSV/TSV/XLS/XLSX)"),
-                                           actionButton("load_example_i", "Load Example Internal Standard Information", icon = icon("file")),
-                                           downloadButton("download_example_i", "Download Example Data"),
+                                           actionButton("load_example_i", "Load Example Internal Standard Data 1", icon = icon("file")),
+                                           downloadButton("download_example_i", "Download Example Internal Standard Data 1"),
+                                           p("Internal standard information is not available for example dataset 2. Please skip this step if you use example dataset 2."),
                                            uiOutput("internal_standard_validation"),
                                            uiOutput("duplicate_selector_ui")),
                                          actionButton("help_btn_upload3", "Help", icon = icon("question-circle"))

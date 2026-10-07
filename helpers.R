@@ -8,9 +8,7 @@ scroll_box <- function(..., height = "800px", collapsed = FALSE) {
         "max-height: ", height
       ))
 }
-nav_buttons <- function(prev_id = NULL, next_id = NULL,
-                        prev_label = "Previous", next_label = "Next") {
-  div(style = "
+nav_buttons <- function(style = "
     position: sticky;
     bottom: 0;
     width: 100%;
@@ -21,14 +19,17 @@ nav_buttons <- function(prev_id = NULL, next_id = NULL,
     justify-content: flex-end;
     gap: 20px;
     z-index: 1000;
-  ",
+  ", 
+   prev_id = NULL, next_id = NULL,
+   prev_label = "Previous", next_label = "Next") {
+  div(style = style,
     if (!is.null(prev_id)) actionButton(
       prev_id, prev_label, icon = icon("arrow-left"),
       style = "font-size:18px; padding:10px 20px; background-color:#6c757d; color:white;"
     ),
     if (!is.null(next_id)) actionButton(
       next_id, next_label, icon = icon("arrow-right"),
-      style = "font-size:18px; padding:10px 20px; background-color:#007bff; color:white;"
+      style = "font-size:18px; padding:10px 20px; background-color:#3c8dbc; color:white;"
     )
   )
 }
