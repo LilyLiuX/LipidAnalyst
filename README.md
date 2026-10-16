@@ -51,7 +51,7 @@
 - 🔥 **Novel visualization**
 
 ```         
--    Differential Mean Lipid Heatmaps\
+-    Differential Mean Lipid Heatmaps
     (organized by carbon chain length × unsaturation)
 ```
 

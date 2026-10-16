@@ -396,10 +396,10 @@ parse_name <- function(names, IS=F){
     
     # remove O- P-, if theres is any in name_2
     # adding this code above is to clearly identify the lipids when O- is at front.
-    name_class <- gsub("O-|P-", "", name_2)
-    name_class <- clean_names(name_class)
-    name_class <- gsub("O-|P-", "", name_2)
-    name_class <- clean_names(name_class)
+    name_class <- gsub("O-|P-", "", name_2, ignore.case = TRUE)
+    # name_class <- clean_names(name_class)
+    name_class <- gsub("O-|P-", "", name_2, ignore.case = TRUE)
+    # name_class <- clean_names(name_class)
     lipid_class <- stringr::str_extract(name_class, "^[A-Z-]+")
     if (is.na(lipid_class)) {
       lipid_class <- name_class
@@ -418,9 +418,9 @@ parse_name <- function(names, IS=F){
     }
     
     
-    if (grepl("O-", name_2)) {
+    if (grepl("O-", name_2, ignore.case = TRUE)) {
       lipid_class <- paste(lipid_class, "O-")
-    } else if (grepl("P-", name_2)) {
+    } else if (grepl("P-", name_2, ignore.case = TRUE)) {
       lipid_class <- paste(lipid_class, "P-")
     }
     
