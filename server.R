@@ -1257,6 +1257,8 @@ server <- function(input, output,session) {
       result <- combine_duplicated_lipids(temp_dataset, method)
       
       temp_dataset <- result$data
+      parsed_table_base <- parse_name(colnames(temp_dataset))  # Update parsed table for the next iteration
+      dataset <- temp_dataset  # Update dataset for the next iteration
       messages <- c(messages, paste0("Class ", class, ": ", result$message))
     }
     

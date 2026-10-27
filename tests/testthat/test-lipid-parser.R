@@ -19,3 +19,10 @@ test_that("PE O- class, total carbon number, and total double bonds are parsed c
   expect_equal(result$Total.carbon, 36)
   expect_equal(result$Total.unsaturation, 1)
 })
+
+test_that("DhCer18:0/16:0 class, total carbon number, and total double bonds are parsed correctly", {
+  result <- parse_name("DhCer18:0/16:0")
+  expect_equal(result$Lipid.class, "DhCer")
+  expect_equal(result$Total.carbon, 34)
+  expect_equal(result$Total.unsaturation, 0)
+})

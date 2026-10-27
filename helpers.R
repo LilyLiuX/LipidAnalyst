@@ -206,6 +206,8 @@ impute_missing_values <- function(data,
                                                    "LoD 1/5 minimum value",
                                                     "LoD 1/2 minimum value"), 
                                   k = 5) {
+  # features are on the column, samples are on the rows
+  
   method <- match.arg(method)
   original_rownames <- rownames(data)  # Save rownames
   
@@ -225,20 +227,33 @@ impute_missing_values <- function(data,
       replace(x, is.na(x), median(x, na.rm = TRUE))
     }), .SDcols = numeric_cols]
     
-  } else if (method == "LoD 1/5 minimum value") {
-    dt[, (numeric_cols) := lapply(.SD, function(x) {
-      replace(x, is.na(x), min(x, na.rm = TRUE) / 5)
-    }), .SDcols = numeric_cols]
-  }
-  else if (method == "LoD 1/2 minimum value") {
-    dt[, (numeric_cols) := lapply(.SD, function(x) {
-      replace(x, is.na(x), min(x, na.rm = TRUE) / 2)
-    }), .SDcols = numeric_cols]
-  }
+  } 
+    
+  else if (method %in% c("LoD 1/5 minimum value",
+                           "LoD 1/2 minimum value")) {
+      
+      global_min <- min(
+        unlist(dt[, ..numeric_cols], use.names = FALSE),
+        na.rm = TRUE
+      )
+      
+      if (!is.finite(global_min)) {
+        showNotification("Cannot impute: no finite global minimum is available.",
+                         type = "error",
+                         duration = 10)
+      }
+      
+      divisor <- if (method == "LoD 1/5 minimum value") 5 else 2
+      
+      dt[, (numeric_cols) := lapply(.SD, function(x) {
+        replace(x, is.na(x), global_min / divisor)
+      }), .SDcols = numeric_cols]
+    }
     result <- as.data.frame(dt)
     rownames(result) <- original_rownames
     return(result)
   }
+  
   
   # 2. KNN FEATUREWISE  → check missing % per FEATURE (column)
   if (method == "knn-featurewise") {
@@ -248,6 +263,7 @@ impute_missing_values <- function(data,
     bad_cols <- names(col_missing[col_missing > 0.80])
     good_cols <- setdiff(numeric_cols, bad_cols)
 
+    df <- as.data.frame(dt)
     
     if (length(bad_cols) > 0) {
       showNotification(
@@ -265,7 +281,14 @@ impute_missing_values <- function(data,
     
     # KNN only on remaining columns
     if (length(good_cols) > 0) {
-      df <- as.data.frame(dt)
+      if (k >= length(good_cols)) {
+        showNotification(
+          paste("KNN k =", k, "is too large. Reducing k to", length(good_cols) - 1),
+          type = "warning", duration = 10
+        )
+      }
+      k <- min(k, length(good_cols) - 1)  # ensure k is valid
+      
       mat <- t(as.matrix(df[, good_cols, drop = FALSE]))
       imputed <- impute::impute.knn(mat, k = k)
       
@@ -322,6 +345,13 @@ impute_missing_values <- function(data,
     
     # Step C: KNN only on the good rows
     if (length(good_rows) > 0) {
+      if (k >= length(good_rows)) {
+        showNotification(
+          paste("KNN k =", k, "is too large. Reducing k to", length(good_rows) - 1),
+          type = "warning", duration = 10
+        )
+      }
+      k <- min(k, length(good_rows) - 1)  # ensure k is valid
       df <- as.data.frame(dt)
       mat <- as.matrix(df[good_rows, numeric_cols, drop = FALSE])
       imputed <- impute::impute.knn(mat, k = k)
@@ -397,9 +427,7 @@ parse_name <- function(names, IS=F){
     # remove O- P-, if theres is any in name_2
     # adding this code above is to clearly identify the lipids when O- is at front.
     name_class <- gsub("O-|P-", "", name_2, ignore.case = TRUE)
-    # name_class <- clean_names(name_class)
-    name_class <- gsub("O-|P-", "", name_2, ignore.case = TRUE)
-    # name_class <- clean_names(name_class)
+    name_class <- clean_names(name_class)
     lipid_class <- stringr::str_extract(name_class, "^[A-Z-]+")
     if (is.na(lipid_class)) {
       lipid_class <- name_class
@@ -763,60 +791,6 @@ insert_combine_rule_ui <- function(id,parsedData_df) {
 }
 
 
-create_lipid_boxplot <- function(sample_data, parse_table) {
-  # Load required libraries
-  require(ggplot2)
-  require(tidyr)
-  require(dplyr)
-  
-  # Assign lipid classes based on parse_table
-  sample_class <- parse_table$Lipid_class
-  sample_class <- sample_class[match(colnames(sample_data), parse_table$name)]
-  
-  # Merge class info with sample data
-  sample_with_class <- rbind(sample_class, sample_data)
-  rownames(sample_with_class) <- c("Lipid_class", rownames(sample_with_class)[-1])
-  
-  # Transpose and convert to dataframe
-  data <- as.data.frame(t(sample_with_class))
-  data$Lipid_class <- as.factor(data$Lipid_class)
-  
-  # Reshape to long format
-  data_long <- data %>%
-    tidyr::pivot_longer(
-      cols = -Lipid_class,
-      names_to = "Sample_Type",
-      values_to = "Value"
-    ) %>%
-    dplyr::select(Lipid_class, Value)
-  
-  # Clean data
-  data_long <- na.omit(data_long)
-  
-  # Split values by lipid class
-  split_set <- split(data_long$Value, data_long$Lipid_class)
-  
-  # Convert to numeric and create plotting dataframe
-  df <- data.frame(
-    value = as.numeric(unlist(split_set, use.names = FALSE)),
-    group = rep(names(split_set), times = lengths(split_set)))
-  
-  n_classes <- length(unique(df$group))
-  # Use Polychrome package (install first)
-  color_palette <- unname(Polychrome::green.armytage.colors(n_classes))
-  # Create plot with colored boxes
-  ggplot(df, aes(x = group, y = log2(value), fill = group)) +
-    
-    geom_boxplot() +
-    labs(x = "Lipid Class", y = "log2(Value)", title = "Lipid Class Boxplot") +
-    theme_bw() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-    scale_fill_manual(
-      name = "Lipid Class",
-      values = color_palette  # Use custom palette
-    ) 
-  
-}
 detect_duplication <- function(parse_data){
   # find duplicated clean names and return corresponding Name(s)
   duplicated_names <- parse_data$Name[duplicated(parse_data$Clean.Name) | 
@@ -833,7 +807,6 @@ detect_duplication <- function(parse_data){
                    )
   return(message)
 }
-
 
 combine_duplicated_lipids <- function(dataset, merged_function_string) {
   # Convert string input to function if needed
@@ -882,7 +855,7 @@ combine_duplicated_lipids <- function(dataset, merged_function_string) {
   return(list(data = new_dataset, message = dup_message))
 }
 
-# combine the duplicated lipids based on the total carbon and total unsaturation
+
 swap_clean_name <- function(lipid_class,dataset, lipid_df_samples) {
   #check the columnnames of dataset is the same sequence as the Name column in lipid_df_samples
   if (!all(colnames(dataset) == lipid_df_samples$Name)) {
@@ -1220,6 +1193,61 @@ no_scale <- function(df) {
 }
 
 # ---- Plots ----
+create_lipid_boxplot <- function(sample_data, parse_table) {
+  # Load required libraries
+  require(ggplot2)
+  require(tidyr)
+  require(dplyr)
+  
+  # Assign lipid classes based on parse_table
+  sample_class <- parse_table$Lipid_class
+  sample_class <- sample_class[match(colnames(sample_data), parse_table$name)]
+  
+  # Merge class info with sample data
+  sample_with_class <- rbind(sample_class, sample_data)
+  rownames(sample_with_class) <- c("Lipid_class", rownames(sample_with_class)[-1])
+  
+  # Transpose and convert to dataframe
+  data <- as.data.frame(t(sample_with_class))
+  data$Lipid_class <- as.factor(data$Lipid_class)
+  
+  # Reshape to long format
+  data_long <- data %>%
+    tidyr::pivot_longer(
+      cols = -Lipid_class,
+      names_to = "Sample_Type",
+      values_to = "Value"
+    ) %>%
+    dplyr::select(Lipid_class, Value)
+  
+  # Clean data
+  data_long <- na.omit(data_long)
+  
+  # Split values by lipid class
+  split_set <- split(data_long$Value, data_long$Lipid_class)
+  
+  # Convert to numeric and create plotting dataframe
+  df <- data.frame(
+    value = as.numeric(unlist(split_set, use.names = FALSE)),
+    group = rep(names(split_set), times = lengths(split_set)))
+  
+  n_classes <- length(unique(df$group))
+  # Use Polychrome package (install first)
+  color_palette <- unname(Polychrome::green.armytage.colors(n_classes))
+  # Create plot with colored boxes
+  ggplot(df, aes(x = group, y = log2(value), fill = group)) +
+    
+    geom_boxplot() +
+    labs(x = "Lipid Class", y = "log2(Value)", title = "Lipid Class Boxplot") +
+    theme_bw() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+    scale_fill_manual(
+      name = "Lipid Class",
+      values = color_palette  # Use custom palette
+    ) 
+  
+}
+
 boxplot_lipid_class <- function(dat, 
                                 lipid_df_samples,
                                 color_set = "Set3",
